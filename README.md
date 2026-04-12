@@ -1,0 +1,29 @@
+Utilties that help details
+
+costco_gas_prices.py — a Python app that fetches real-time regular and premium gas prices from Costco warehouse locations.
+
+How it works
+Queries Costco's internal warehouse lookup API (AjaxWarehouseBrowseLookupView) using curl_cffi to bypass Akamai bot protection via browser TLS fingerprint impersonation
+Geocodes ZIP codes to coordinates using OpenStreetMap Nominatim (free, no API key)
+Displays prices sorted by distance with station details and hours
+Usage
+
+# Activate the venv first
+source .venv/bin/activate
+
+# Search by ZIP code
+python costco_gas_prices.py --zip 90210
+
+# Search by coordinates
+python costco_gas_prices.py --lat 37.3 --lng -121.9
+
+# Custom radius (default 25 miles)
+python costco_gas_prices.py --zip 95134 --radius 15
+
+# JSON output (for piping to other tools)
+python costco_gas_prices.py --zip 95134 --json
+
+# Default: San Jose, CA
+python costco_gas_prices.py
+Dependency
+One external package required: curl_cffi (already installed in .venv).
