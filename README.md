@@ -1,4 +1,4 @@
-Utilties that help details
+Utilties that help details for day to day requirements use
 
 costco_gas_prices.py — a Python app that fetches real-time regular and premium gas prices from Costco warehouse locations.
 
