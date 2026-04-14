@@ -188,6 +188,95 @@ def extract_docstring(lines: list[str], start: int) -> tuple[list[str], int]:
     return [], start
 
 
+def _is_argparse_main(lines: list[str], start: int) -> tuple[bool, int]:
+    """Detect if a block starting at `start` is an argparse-based main() function.
+    Returns (is_argparse_main, end_index)."""
+    stripped = lines[start].strip()
+    if not stripped.startswith("def main("):
+        return False, start
+
+    # Scan the function body for argparse usage
+    has_argparse = False
+    i = start + 1
+    n = len(lines)
+    while i < n:
+        line = lines[i]
+        # End of function: non-blank, non-comment line at indent level 0
+        if line.strip() and not line[0].isspace() and not line.strip().startswith("#"):
+            break
+        if "argparse" in line or "ArgumentParser" in line or "parse_args" in line:
+            has_argparse = True
+        i += 1
+    return has_argparse, i
+
+
+def _extract_argparse_params(lines: list[str]) -> dict:
+    """Extract argument names and defaults from argparse add_argument calls."""
+    params = {}
+    for line in lines:
+        # Match: parser.add_argument("--name", ..., default=val, ...)
+        m = re.match(r'\s*parser\.add_argument\(\s*["\']--(\w+)["\']', line)
+        if not m:
+            continue
+        name = m.group(1)
+        # Extract default value
+        dm = re.search(r'default\s*=\s*([^,\)]+)', line)
+        default = dm.group(1).strip() if dm else "None"
+        # Extract type
+        tm = re.search(r'type\s*=\s*(\w+)', line)
+        typ = tm.group(1) if tm else "str"
+        # Extract help text
+        hm = re.search(r'help\s*=\s*["\']([^"\']+)["\']', line)
+        help_text = hm.group(1) if hm else ""
+        params[name] = {"default": default, "type": typ, "help": help_text}
+    return params
+
+
+def _build_config_cell(params: dict, main_lines: list[str]) -> list[str]:
+    """Build a notebook-friendly config cell replacing argparse with plain variables."""
+    result = ["# Configuration — edit these values to change the search\n"]
+    for name, info in params.items():
+        default = info["default"]
+        # Fix action="store_true" args: default to False not None
+        if default == "None" and info["type"] == "str":
+            # Check if original add_argument used store_true
+            for ml in main_lines:
+                if f"--{name}" in ml and "store_true" in ml:
+                    default = "False"
+                    break
+        comment = f"  # {info['help']}" if info["help"] else ""
+        result.append(f"{name.upper()} = {default}{comment}\n")
+    return result
+
+
+def _build_run_cell(params: dict, main_lines: list[str]) -> list[str]:
+    """Build the run cell that replaces the argparse main() body.
+    Extracts the logic after parse_args() and rewrites args.X references."""
+    # Find the line after parse_args()
+    start = 0
+    for j, line in enumerate(main_lines):
+        if "parse_args()" in line:
+            start = j + 1
+            break
+
+    if start == 0:
+        # No parse_args found — just return main() call
+        return ["main()\n"]
+
+    body_lines = main_lines[start:]
+    result = []
+    for line in body_lines:
+        rewritten = line
+        # Replace args.X with X (uppercased config variable)
+        for name in params:
+            rewritten = rewritten.replace(f"args.{name}", name.upper())
+        # Strip exactly 4 spaces of indentation (main() body → top-level)
+        if rewritten.startswith("    "):
+            rewritten = rewritten[4:]
+        result.append(rewritten)
+    return result
+
+
 def parse_py_to_cells(source: str, auto_split: bool = True) -> list[dict]:
     """Parse Python source into notebook cells."""
     lines = source.splitlines(keepends=True)
@@ -266,11 +355,51 @@ def parse_py_to_cells(source: str, auto_split: bool = True) -> list[dict]:
                 i = j
                 continue
 
-        # Auto-split on top-level def/class/if __name__ if enabled
+        # Detect argparse-based main() and replace with notebook-friendly cells
+        if auto_split and stripped.startswith("def main("):
+            is_ap, end_idx = _is_argparse_main(lines, i)
+            if is_ap:
+                flush()
+                main_lines = lines[i:end_idx]
+                params = _extract_argparse_params(main_lines)
+
+                # Add markdown cell for configuration section
+                config_md = make_cell("markdown", ["## Configuration\n"])
+                if config_md:
+                    cells.append(config_md)
+
+                # Add config cell with editable variables
+                config_src = _build_config_cell(params, main_lines)
+                config_cell = make_cell("code", config_src)
+                if config_cell:
+                    cells.append(config_cell)
+
+                # Add markdown cell for run section
+                run_md = make_cell("markdown", ["## Run\n"])
+                if run_md:
+                    cells.append(run_md)
+
+                # Add run cell with the actual logic
+                run_src = _build_run_cell(params, main_lines)
+                run_cell = make_cell("code", run_src)
+                if run_cell:
+                    cells.append(run_cell)
+
+                i = end_idx
+                continue
+
+        # Skip `if __name__ == "__main__"` blocks — not needed in notebooks
+        if stripped.startswith("if __name__"):
+            j = i + 1
+            while j < n and (lines[j].strip() == "" or lines[j][0].isspace()):
+                j += 1
+            i = j
+            continue
+
+        # Auto-split on top-level def/class if enabled
         if auto_split and buf and stripped and \
                 (stripped.startswith("def ") or stripped.startswith("class ") or
-                 stripped.startswith("async def ") or
-                 stripped.startswith("if __name__")):
+                 stripped.startswith("async def ")):
             # Only split if previous buffer has content
             if buf_type == "code" and any(l.strip() for l in buf):
                 flush()
@@ -285,6 +414,21 @@ def parse_py_to_cells(source: str, auto_split: bool = True) -> list[dict]:
         i += 1
 
     flush()
+
+    # Post-process: remove `import argparse` if argparse was converted away
+    has_argparse_usage = any(
+        ("argparse." in line or "ArgumentParser" in line)
+        for c in cells for line in c["source"]
+        if c["cell_type"] == "code"
+    )
+    if not has_argparse_usage:
+        for c in cells:
+            if c["cell_type"] == "code":
+                c["source"] = [
+                    line for line in c["source"]
+                    if line.strip() != "import argparse"
+                ]
+
     return cells
 
 
