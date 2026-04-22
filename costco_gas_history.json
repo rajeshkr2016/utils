@@ -1,0 +1,172 @@
+[
+  {
+    "timestamp": "2026-04-15T08:49",
+    "prices": {
+      "Livermore": {
+        "regular": 5.399,
+        "premium": 5.799,
+        "distance": 3.6003332459596273
+      },
+      "Pleasanton": {
+        "regular": 5.459,
+        "premium": 5.859,
+        "distance": 8.886100527614802
+      },
+      "Danville": {
+        "regular": 5.399,
+        "premium": 5.799,
+        "distance": 13.945703587741994
+      },
+      "Tracy": {
+        "regular": 5.199,
+        "premium": 5.599,
+        "distance": 16.235954237050752
+      },
+      "Newark": {
+        "regular": 5.099,
+        "premium": 5.659,
+        "distance": 16.799099109175145
+      },
+      "Fremont": {
+        "regular": 5.099,
+        "premium": 5.659,
+        "distance": 16.833931336956244
+      },
+      "Hayward": {
+        "regular": 5.159,
+        "premium": 5.559,
+        "distance": 18.7082187990074
+      },
+      "Hayward Business Center": {
+        "regular": 5.299,
+        "premium": 5.699,
+        "distance": 18.952498107523766
+      },
+      "Brentwood CA": {
+        "regular": 5.259,
+        "premium": 5.699,
+        "distance": 19.472429373485067
+      },
+      "NE San Jose": {
+        "regular": 5.199,
+        "premium": 5.599,
+        "distance": 20.88954541298347
+      },
+      "Antioch": {
+        "regular": 5.259,
+        "premium": 5.659,
+        "distance": 23.46037321710439
+      },
+      "San Leandro": {
+        "regular": 5.159,
+        "premium": 5.599,
+        "distance": 23.461262852516356
+      },
+      "Santa Clara": {
+        "regular": 5.199,
+        "premium": 5.599,
+        "distance": 24.134787881915038
+      },
+      "Sunnyvale": {
+        "regular": 5.199,
+        "premium": 5.599,
+        "distance": 24.673867592830508
+      },
+      "Concord": {
+        "regular": 5.399,
+        "premium": 5.799,
+        "distance": 24.683689703890437
+      },
+      "San Jose Business Center": {
+        "regular": 5.099,
+        "premium": 5.599,
+        "distance": 24.837795822582976
+      }
+    }
+  },
+  {
+    "timestamp": "2026-04-15T08:56",
+    "prices": {
+      "Livermore": {
+        "regular": 5.399,
+        "premium": 5.799,
+        "distance": 3.6003332459596273
+      },
+      "Pleasanton": {
+        "regular": 5.459,
+        "premium": 5.859,
+        "distance": 8.886100527614802
+      },
+      "Danville": {
+        "regular": 5.399,
+        "premium": 5.799,
+        "distance": 13.945703587741994
+      },
+      "Tracy": {
+        "regular": 5.199,
+        "premium": 5.599,
+        "distance": 16.235954237050752
+      },
+      "Newark": {
+        "regular": 5.099,
+        "premium": 5.659,
+        "distance": 16.799099109175145
+      },
+      "Fremont": {
+        "regular": 5.099,
+        "premium": 5.659,
+        "distance": 16.833931336956244
+      },
+      "Hayward": {
+        "regular": 5.159,
+        "premium": 5.559,
+        "distance": 18.7082187990074
+      },
+      "Hayward Business Center": {
+        "regular": 5.299,
+        "premium": 5.699,
+        "distance": 18.952498107523766
+      },
+      "Brentwood CA": {
+        "regular": 5.259,
+        "premium": 5.699,
+        "distance": 19.472429373485067
+      },
+      "NE San Jose": {
+        "regular": 5.199,
+        "premium": 5.599,
+        "distance": 20.88954541298347
+      },
+      "Antioch": {
+        "regular": 5.259,
+        "premium": 5.659,
+        "distance": 23.46037321710439
+      },
+      "San Leandro": {
+        "regular": 5.159,
+        "premium": 5.599,
+        "distance": 23.461262852516356
+      },
+      "Santa Clara": {
+        "regular": 5.199,
+        "premium": 5.599,
+        "distance": 24.134787881915038
+      },
+      "Sunnyvale": {
+        "regular": 5.199,
+        "premium": 5.599,
+        "distance": 24.673867592830508
+      },
+      "Concord": {
+        "regular": 5.399,
+        "premium": 5.799,
+        "distance": 24.683689703890437
+      },
+      "San Jose Business Center": {
+        "regular": 5.099,
+        "premium": 5.599,
+        "distance": 24.837795822582976
+      }
+    }
+  }
+]
