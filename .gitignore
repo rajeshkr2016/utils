@@ -1,1 +1,4 @@
 .claude
+*secret*
+.env
+gdrive_token.json
