@@ -77,7 +77,7 @@ def geocode_zip(zip_code: str, cache: dict) -> tuple[float, float, str]:
     return lat, lng, label
 
 
-def fetch_costco(lat: float, lng: float, num: int = 25) -> list[dict]:
+def fetch_costco(lat: float, lng: float, num: int = 50) -> list[dict]:
     resp = cffi_requests.get(
         COSTCO_API_URL,
         params={

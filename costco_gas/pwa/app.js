@@ -2,11 +2,13 @@
 // hourly by a GitHub Actions cron job.
 
 const DATA_DIR = "data";
+const RADIUS_KEY = "costcoGas.radius";
 
 const $ = (id) => document.getElementById(id);
 const els = {
   form: $("search-form"),
   zip: $("zip"),
+  radius: $("radius"),
   fetchBtn: $("fetch-btn"),
   locateBtn: $("locate-btn"),
   status: $("status"),
@@ -21,6 +23,13 @@ const els = {
 };
 
 let index = null;
+let currentSnapshot = null;
+
+// Restore previous radius selection.
+const savedRadius = localStorage.getItem(RADIUS_KEY);
+if (savedRadius && [...els.radius.options].some((o) => o.value === savedRadius)) {
+  els.radius.value = savedRadius;
+}
 
 function setStatus(msg, kind = "") {
   els.status.textContent = msg;
@@ -79,9 +88,10 @@ async function showZip(zip) {
       fetchJSON(`${DATA_DIR}/${zip}.json`),
       fetchJSON(`${DATA_DIR}/${zip}_history.json`).catch(() => []),
     ]);
-    renderSnapshot(snap);
+    currentSnapshot = snap;
+    renderSnapshot();
     renderHistory(history);
-    setStatus(`Showing ${snap.label} — ${snap.warehouses.length} stations`, "ok");
+    setStatus(`Showing ${snap.label}`, "ok");
   } catch (err) {
     setStatus(err.message || "Failed to load", "err");
   } finally {
@@ -89,13 +99,23 @@ async function showZip(zip) {
   }
 }
 
-function renderSnapshot(snap) {
+function getRadius() {
+  const r = Number(els.radius.value);
+  return Number.isFinite(r) && r > 0 ? r : 25;
+}
+
+function renderSnapshot() {
+  if (!currentSnapshot) return;
+  const snap = currentSnapshot;
+  const radius = getRadius();
+  const filtered = snap.warehouses.filter((w) => (w.distance ?? 999) <= radius);
+
   els.resultsTitle.textContent = `${snap.label} — latest snapshot`;
   els.snapshotMeta.textContent =
-    `Updated ${formatTs(snap.updated)} · ${snap.warehouses.length} station(s) within ${snap.radius} mi`;
+    `Updated ${formatTs(snap.updated)} · ${filtered.length} of ${snap.warehouses.length} station(s) within ${radius} mi`;
   els.resultsBody.innerHTML = "";
-  for (let i = 0; i < snap.warehouses.length; i++) {
-    const w = snap.warehouses[i];
+  for (let i = 0; i < filtered.length; i++) {
+    const w = filtered[i];
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${i + 1}</td>
@@ -216,6 +236,11 @@ els.form.addEventListener("submit", (e) => {
   e.preventDefault();
   const zip = els.zip.value;
   if (zip) showZip(zip);
+});
+
+els.radius.addEventListener("change", () => {
+  localStorage.setItem(RADIUS_KEY, els.radius.value);
+  renderSnapshot();
 });
 
 els.locateBtn.addEventListener("click", () => {
