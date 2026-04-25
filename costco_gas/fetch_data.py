@@ -13,45 +13,57 @@ Output files:
 
 import json
 import sys
-import time
 from datetime import datetime, timezone
 from pathlib import Path
-from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 from curl_cffi import requests as cffi_requests
 
 ROOT = Path(__file__).resolve().parent
 CONFIG_PATH = ROOT / "config.json"
+ZIP_CACHE_PATH = ROOT / "zip_cache.json"
 DATA_DIR = ROOT / "pwa" / "data"
 HISTORY_LIMIT = 1000
 
 COSTCO_API_URL = "https://www.costco.com/AjaxWarehouseBrowseLookupView"
-NOMINATIM_URL = "https://nominatim.openstreetmap.org/search"
+ZIPPOPOTAM_URL = "https://api.zippopotam.us/us/{zip}"
 USER_AGENT = "CostcoGasPriceFetcher/1.0 (github actions cron)"
 
 
-def geocode_zip(zip_code: str) -> tuple[float, float, str]:
-    params = urlencode({
-        "postalcode": zip_code,
-        "country": "US",
-        "format": "json",
-        "addressdetails": "1",
-        "limit": "1",
-    })
-    req = Request(f"{NOMINATIM_URL}?{params}",
-                  headers={"User-Agent": USER_AGENT})
+def load_zip_cache() -> dict:
+    if ZIP_CACHE_PATH.exists():
+        try:
+            return json.loads(ZIP_CACHE_PATH.read_text())
+        except (json.JSONDecodeError, OSError):
+            pass
+    return {}
+
+
+def save_zip_cache(cache: dict) -> None:
+    ZIP_CACHE_PATH.write_text(json.dumps(cache, indent=2, sort_keys=True) + "\n")
+
+
+def geocode_zip(zip_code: str, cache: dict) -> tuple[float, float, str]:
+    if zip_code in cache:
+        c = cache[zip_code]
+        return float(c["lat"]), float(c["lng"]), c["label"]
+
+    url = ZIPPOPOTAM_URL.format(zip=zip_code)
+    req = Request(url, headers={"User-Agent": USER_AGENT, "Accept": "application/json"})
     with urlopen(req, timeout=15) as resp:
         data = json.loads(resp.read())
-    if not data:
-        raise RuntimeError(f"No coordinates for ZIP {zip_code}")
-    entry = data[0]
-    addr = entry.get("address") or {}
-    city = (addr.get("city") or addr.get("town") or addr.get("village")
-            or addr.get("hamlet") or "")
-    state = addr.get("state") or ""
-    label = ", ".join(p for p in (city, state) if p) or zip_code
-    return float(entry["lat"]), float(entry["lon"]), label
+    places = data.get("places") or []
+    if not places:
+        raise RuntimeError(f"No places for ZIP {zip_code}")
+    p = places[0]
+    lat = float(p["latitude"])
+    lng = float(p["longitude"])
+    city = (p.get("place name") or "").strip()
+    state = (p.get("state abbreviation") or p.get("state") or "").strip()
+    label = ", ".join(s for s in (city, state) if s) or zip_code
+
+    cache[zip_code] = {"lat": lat, "lng": lng, "label": label}
+    return lat, lng, label
 
 
 def fetch_costco(lat: float, lng: float, num: int = 25) -> list[dict]:
@@ -168,14 +180,18 @@ def main() -> int:
     radius = float(cfg.get("radius", 25))
     DATA_DIR.mkdir(parents=True, exist_ok=True)
 
+    cache = load_zip_cache()
+    cache_dirty = False
+
     now = datetime.now(timezone.utc).isoformat(timespec="minutes").replace("+00:00", "Z")
     index = {"updated": now, "radius": radius, "zips": [], "errors": {}}
 
-    for i, zip_code in enumerate(zips):
-        if i:
-            time.sleep(1.1)  # be polite to Nominatim
+    for zip_code in zips:
         try:
-            lat, lng, label = geocode_zip(zip_code)
+            had_cache = zip_code in cache
+            lat, lng, label = geocode_zip(zip_code, cache)
+            if not had_cache:
+                cache_dirty = True
             warehouses = fetch_costco(lat, lng)
             filtered = [w for w in warehouses if (w.get("distance") or 999) <= radius]
         except Exception as e:
@@ -187,6 +203,9 @@ def main() -> int:
         append_history(zip_code, filtered, now)
         index["zips"].append({"zip": zip_code, "lat": lat, "lng": lng, "label": label})
         print(f"[{zip_code}] {label}: {len(filtered)} stations within {radius}mi")
+
+    if cache_dirty:
+        save_zip_cache(cache)
 
     (DATA_DIR / "index.json").write_text(json.dumps(index, indent=2))
 
