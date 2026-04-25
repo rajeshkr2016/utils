@@ -48,19 +48,29 @@ def geocode_zip(zip_code: str, cache: dict) -> tuple[float, float, str]:
         c = cache[zip_code]
         return float(c["lat"]), float(c["lng"]), c["label"]
 
-    url = ZIPPOPOTAM_URL.format(zip=zip_code)
-    req = Request(url, headers={"User-Agent": USER_AGENT, "Accept": "application/json"})
-    with urlopen(req, timeout=15) as resp:
-        data = json.loads(resp.read())
-    places = data.get("places") or []
-    if not places:
-        raise RuntimeError(f"No places for ZIP {zip_code}")
-    p = places[0]
-    lat = float(p["latitude"])
-    lng = float(p["longitude"])
-    city = (p.get("place name") or "").strip()
-    state = (p.get("state abbreviation") or p.get("state") or "").strip()
-    label = ", ".join(s for s in (city, state) if s) or zip_code
+    # Public geocoders rate-limit GitHub Actions IPs aggressively. Try once
+    # and on any failure, surface a clear message asking the user to populate
+    # costco_gas/zip_cache.json manually (one entry per ZIP).
+    try:
+        url = ZIPPOPOTAM_URL.format(zip=zip_code)
+        req = Request(url, headers={"User-Agent": USER_AGENT, "Accept": "application/json"})
+        with urlopen(req, timeout=15) as resp:
+            data = json.loads(resp.read())
+        places = data.get("places") or []
+        if not places:
+            raise RuntimeError("zippopotam returned no places")
+        p = places[0]
+        lat = float(p["latitude"])
+        lng = float(p["longitude"])
+        city = (p.get("place name") or "").strip()
+        state = (p.get("state abbreviation") or p.get("state") or "").strip()
+        label = ", ".join(s for s in (city, state) if s) or zip_code
+    except Exception as e:
+        raise RuntimeError(
+            f"Geocode failed for ZIP {zip_code} ({e}). "
+            f"Add an entry to costco_gas/zip_cache.json: "
+            f'{{"{zip_code}": {{"lat": <num>, "lng": <num>, "label": "City, ST"}}}}'
+        ) from e
 
     cache[zip_code] = {"lat": lat, "lng": lng, "label": label}
     return lat, lng, label
