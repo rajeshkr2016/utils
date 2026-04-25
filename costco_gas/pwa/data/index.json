@@ -1,0 +1,13 @@
+{
+  "updated": "2026-04-25T23:46Z",
+  "radius": 25.0,
+  "zips": [
+    {
+      "zip": "94550",
+      "lat": 37.683,
+      "lng": -121.763,
+      "label": "Livermore, CA"
+    }
+  ],
+  "errors": {}
+}

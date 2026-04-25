@@ -1,0 +1,177 @@
+{
+  "zip": "94550",
+  "label": "Livermore, CA",
+  "origin": {
+    "lat": 37.683,
+    "lng": -121.763
+  },
+  "radius": 25.0,
+  "updated": "2026-04-25T23:46Z",
+  "warehouses": [
+    {
+      "id": 146,
+      "name": "Livermore",
+      "address": "2800 INDEPENDENCE DR, LIVERMORE, CA 94551-7628",
+      "phone": "(925) 443-6306",
+      "latitude": 37.703,
+      "longitude": -121.812,
+      "distance": 3.0123640224838435,
+      "regular": 5.499,
+      "premium": 5.899
+    },
+    {
+      "id": 1341,
+      "name": "Pleasanton",
+      "address": "7200 JOHNSON DRIVE, PLEASANTON, CA 94588-8005",
+      "phone": "(925) 475-4000",
+      "latitude": 37.695,
+      "longitude": -121.917,
+      "distance": 8.455179506644422,
+      "regular": 5.599,
+      "premium": 5.999
+    },
+    {
+      "id": 21,
+      "name": "Danville",
+      "address": "3150 FOSTORIA WAY, DANVILLE, CA 94526-5553",
+      "phone": "(925) 277-0407",
+      "latitude": 37.782,
+      "longitude": -121.973,
+      "distance": 13.350307044446241,
+      "regular": 5.649,
+      "premium": 5.999
+    },
+    {
+      "id": 658,
+      "name": "Tracy",
+      "address": "3250 W GRANT LINE RD, TRACY, CA 95304-8427",
+      "phone": "(209) 830-5340",
+      "latitude": 37.751,
+      "longitude": -121.475,
+      "distance": 16.415991944649637,
+      "regular": 5.199,
+      "premium": 5.659
+    },
+    {
+      "id": 1660,
+      "name": "Newark",
+      "address": "350 NEWPARK MALL, NEWARK, CA 94560-5201",
+      "phone": "(510) 493-2945",
+      "latitude": 37.526,
+      "longitude": -121.999,
+      "distance": 16.857356019794384,
+      "regular": 5.159,
+      "premium": 5.699
+    },
+    {
+      "id": 778,
+      "name": "Fremont",
+      "address": "43621 PACIFIC COMMONS BLVD, FREMONT, CA 94538-3809",
+      "phone": "(510) 897-1092",
+      "latitude": 37.502,
+      "longitude": -121.973,
+      "distance": 16.976105939473985,
+      "regular": 5.059,
+      "premium": 5.459
+    },
+    {
+      "id": 1061,
+      "name": "Hayward",
+      "address": "28505 HESPERIAN BLVD, HAYWARD, CA 94545-5008",
+      "phone": "(510) 921-3128",
+      "latitude": 37.615,
+      "longitude": -122.09,
+      "distance": 18.48303572350776,
+      "regular": 5.359,
+      "premium": 5.759
+    },
+    {
+      "id": 823,
+      "name": "Hayward Business Center",
+      "address": "22330 HATHAWAY AVE, HAYWARD, CA 94541-4861",
+      "phone": "(510) 259-6600",
+      "latitude": 37.668,
+      "longitude": -122.103,
+      "distance": 18.609648915153265,
+      "regular": 5.359,
+      "premium": 5.759
+    },
+    {
+      "id": 1662,
+      "name": "Brentwood CA",
+      "address": "5151 HEIDORN RANCH RD, BRENTWOOD, CA 94513-0000",
+      "phone": "(925) 666-0223",
+      "latitude": 37.957,
+      "longitude": -121.746,
+      "distance": 18.941516692098926,
+      "regular": 5.359,
+      "premium": 5.759
+    },
+    {
+      "id": 1004,
+      "name": "NE San Jose",
+      "address": "1709 AUTOMATION PKWY, SAN JOSE, CA 95131-1866",
+      "phone": "(408) 678-2150",
+      "latitude": 37.39,
+      "longitude": -121.884,
+      "distance": 21.287808957011332,
+      "regular": 5.299,
+      "premium": 5.699
+    },
+    {
+      "id": 1002,
+      "name": "Antioch",
+      "address": "2201 VERNE ROBERTS CIR, ANTIOCH, CA 94509-7911",
+      "phone": "(925) 757-7130",
+      "latitude": 38.009,
+      "longitude": -121.836,
+      "distance": 22.858432076014225,
+      "regular": 5.359,
+      "premium": 5.759
+    },
+    {
+      "id": 118,
+      "name": "San Leandro",
+      "address": "1900 DAVIS ST, SAN LEANDRO, CA 94577-1209",
+      "phone": "(510) 562-6708",
+      "latitude": 37.72,
+      "longitude": -122.182,
+      "distance": 23.032201074474518,
+      "regular": 5.399,
+      "premium": 5.799
+    },
+    {
+      "id": 663,
+      "name": "Concord",
+      "address": "2400 MONUMENT BLVD, CONCORD, CA 94520-3105",
+      "phone": "(925) 566-4003",
+      "latitude": 37.958,
+      "longitude": -122.033,
+      "distance": 24.029279667024248,
+      "regular": 5.399,
+      "premium": 5.859
+    },
+    {
+      "id": 129,
+      "name": "Santa Clara",
+      "address": "1601 COLEMAN AVE, SANTA CLARA, CA 95050-3122",
+      "phone": "(408) 567-9000",
+      "latitude": 37.357,
+      "longitude": -121.939,
+      "distance": 24.48600414001395,
+      "regular": 5.299,
+      "premium": 5.699
+    },
+    {
+      "id": 423,
+      "name": "Sunnyvale",
+      "address": "150 LAWRENCE STATION RD, SUNNYVALE, CA 94086-5309",
+      "phone": "(408) 730-1892",
+      "latitude": 37.372,
+      "longitude": -121.995,
+      "distance": 24.949975726475046,
+      "regular": 5.239,
+      "premium": 5.639
+    }
+  ]
+}

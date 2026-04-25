@@ -13,6 +13,7 @@ Output files:
 
 import json
 import sys
+import traceback
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.request import Request, urlopen
@@ -192,6 +193,7 @@ def main() -> int:
 
     cache = load_zip_cache()
     cache_dirty = False
+    print(f"Loaded zip_cache.json: {sorted(cache.keys()) or '(empty)'}", file=sys.stderr)
 
     now = datetime.now(timezone.utc).isoformat(timespec="minutes").replace("+00:00", "Z")
     index = {"updated": now, "radius": radius, "zips": [], "errors": {}}
@@ -205,7 +207,8 @@ def main() -> int:
             warehouses = fetch_costco(lat, lng)
             filtered = [w for w in warehouses if (w.get("distance") or 999) <= radius]
         except Exception as e:
-            print(f"[{zip_code}] failed: {e}", file=sys.stderr)
+            print(f"[{zip_code}] failed ({type(e).__name__}): {e}", file=sys.stderr)
+            traceback.print_exc()
             index["errors"][zip_code] = str(e)
             continue
 

@@ -1,0 +1,82 @@
+[
+  {
+    "timestamp": "2026-04-25T23:45Z",
+    "prices": {
+      "Livermore": {
+        "regular": 5.499,
+        "premium": 5.899,
+        "distance": 3.0123640224838435
+      },
+      "Pleasanton": {
+        "regular": 5.599,
+        "premium": 5.999,
+        "distance": 8.455179506644422
+      },
+      "Danville": {
+        "regular": 5.649,
+        "premium": 5.999,
+        "distance": 13.350307044446241
+      },
+      "Tracy": {
+        "regular": 5.199,
+        "premium": 5.659,
+        "distance": 16.415991944649637
+      },
+      "Newark": {
+        "regular": 5.159,
+        "premium": 5.699,
+        "distance": 16.857356019794384
+      },
+      "Fremont": {
+        "regular": 5.059,
+        "premium": 5.459,
+        "distance": 16.976105939473985
+      },
+      "Hayward": {
+        "regular": 5.359,
+        "premium": 5.759,
+        "distance": 18.48303572350776
+      },
+      "Hayward Business Center": {
+        "regular": 5.359,
+        "premium": 5.759,
+        "distance": 18.609648915153265
+      },
+      "Brentwood CA": {
+        "regular": 5.359,
+        "premium": 5.759,
+        "distance": 18.941516692098926
+      },
+      "NE San Jose": {
+        "regular": 5.299,
+        "premium": 5.699,
+        "distance": 21.287808957011332
+      },
+      "Antioch": {
+        "regular": 5.359,
+        "premium": 5.759,
+        "distance": 22.858432076014225
+      },
+      "San Leandro": {
+        "regular": 5.399,
+        "premium": 5.799,
+        "distance": 23.032201074474518
+      },
+      "Concord": {
+        "regular": 5.399,
+        "premium": 5.859,
+        "distance": 24.029279667024248
+      },
+      "Santa Clara": {
+        "regular": 5.299,
+        "premium": 5.699,
+        "distance": 24.48600414001395
+      },
+      "Sunnyvale": {
+        "regular": 5.239,
+        "premium": 5.639,
+        "distance": 24.949975726475046
+      }
+    }
+  }
+]
