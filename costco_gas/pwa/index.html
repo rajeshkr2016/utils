@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0b3d91" />
+<title>Costco Gas Prices</title>
+
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="icon" type="image/svg+xml" href="icon.svg" />
+<link rel="apple-touch-icon" href="icon.svg" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Costco Gas" />
+
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<header>
+  <h1>Costco Gas Prices</h1>
+  <p id="data-meta" class="meta"></p>
+</header>
+
+<main>
+  <form id="search-form" autocomplete="off">
+    <div class="row">
+      <label for="zip">Location</label>
+      <select id="zip" name="zip" required disabled>
+        <option value="">Loading…</option>
+      </select>
+    </div>
+    <div class="row buttons">
+      <button type="submit" id="fetch-btn" disabled>Show prices</button>
+      <button type="button" id="locate-btn" disabled title="Pick the nearest tracked location">Use my location</button>
+    </div>
+  </form>
+
+  <p id="status" class="status" role="status" aria-live="polite"></p>
+
+  <section id="results" hidden>
+    <h2 id="results-title">Latest snapshot</h2>
+    <p id="snapshot-meta" class="meta"></p>
+    <div class="table-wrap">
+      <table id="results-table">
+        <thead>
+          <tr><th>#</th><th>Location</th><th>Dist</th><th>Regular</th><th>Premium</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="history-section" hidden>
+    <h2>History</h2>
+    <p class="meta"><span id="history-count">0</span> snapshot(s) tracked</p>
+    <div class="chart-wrap">
+      <svg id="history-chart" viewBox="0 0 600 280" preserveAspectRatio="xMidYMid meet" aria-label="Average price history"></svg>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <small>Snapshots collected hourly via GitHub Actions. Data: Costco warehouse locator.</small>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

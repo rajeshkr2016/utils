@@ -1,0 +1,19 @@
+{
+  "name": "Costco Gas Prices",
+  "short_name": "Costco Gas",
+  "description": "View regular and premium gas prices at nearby Costco warehouses.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f6f7fb",
+  "theme_color": "#0b3d91",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+name: Costco Gas — fetch data + deploy Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "costco_gas/pwa/**"
+      - "costco_gas/fetch_data.py"
+      - "costco_gas/config.json"
+      - ".github/workflows/pages.yml"
+  schedule:
+    # Hourly. GitHub free runners can delay scheduled jobs under load,
+    # so don't expect minute-precise cadence.
+    - cron: "0 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        if: github.event_name != 'push'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install fetcher dependencies
+        if: github.event_name != 'push'
+        run: pip install --quiet "curl_cffi>=0.7"
+
+      - name: Fetch latest Costco gas data
+        if: github.event_name != 'push'
+        run: python costco_gas/fetch_data.py
+
+      - name: Commit data changes (if any)
+        if: github.event_name != 'push'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add costco_gas/pwa/data
+          if git diff --staged --quiet; then
+            echo "No data changes to commit."
+          else
+            git commit -m "chore(costco-gas): update snapshot $(date -u +%Y-%m-%dT%H:%MZ)"
+            git push
+          fi
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: costco_gas/pwa
+      - id: deployment
+        uses: actions/deploy-pages@v4
