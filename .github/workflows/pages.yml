@@ -1,9 +1,10 @@
-name: Costco Gas — fetch data + deploy Pages
+name: Site — fetch Costco data + deploy Pages
 
 on:
   push:
     branches: [main]
     paths:
+      - "site/**"
       - "costco_gas/pwa/**"
       - "costco_gas/fetch_data.py"
       - "costco_gas/config.json"
@@ -59,9 +60,16 @@ jobs:
             git push
           fi
 
+      - name: Stage Pages content
+        run: |
+          rm -rf _site
+          mkdir -p _site/costco-gas
+          cp -R site/. _site/
+          cp -R costco_gas/pwa/. _site/costco-gas/
+
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: costco_gas/pwa
+          path: _site
       - id: deployment
         uses: actions/deploy-pages@v4
