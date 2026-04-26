@@ -20,6 +20,10 @@ const els = {
   historySection: $("history-section"),
   historyCount: $("history-count"),
   historyChart: $("history-chart"),
+  zipEntry: $("zip-entry"),
+  zipUpdate: $("zip-update"),
+  lookupStatus: $("lookup-status"),
+  lookupSnippet: $("lookup-snippet"),
 };
 
 let index = null;
@@ -244,9 +248,16 @@ els.radius.addEventListener("change", () => {
 });
 
 els.locateBtn.addEventListener("click", () => {
-  if (!index || !index.zips.length) return;
+  if (!index || !index.zips.length) {
+    setStatus("No tracked locations to compare against", "err");
+    return;
+  }
   if (!navigator.geolocation) {
-    setStatus("Geolocation not available", "err");
+    setStatus("Geolocation not available in this browser", "err");
+    return;
+  }
+  if (location.protocol !== "https:" && location.hostname !== "localhost") {
+    setStatus("Geolocation requires HTTPS", "err");
     return;
   }
   setStatus("Locating you…");
@@ -258,14 +269,77 @@ els.locateBtn.addEventListener("click", () => {
         const d = haversineMi(me, { lat: z.lat, lng: z.lng });
         if (d < bestD) { bestD = d; best = z; }
       }
-      if (best) {
-        els.zip.value = best.zip;
-        showZip(best.zip);
+      if (!best) {
+        setStatus("No tracked locations match", "err");
+        return;
       }
+      els.zip.value = best.zip;
+      setStatus(`Nearest tracked: ${best.label} (${bestD.toFixed(1)} mi away)`, "ok");
+      showZip(best.zip);
     },
-    (err) => setStatus(`Location: ${err.message}`, "err"),
+    (err) => {
+      const reasons = {
+        1: "Permission denied — allow location access in browser settings.",
+        2: "Position unavailable — try again or check device location services.",
+        3: "Timed out — try again.",
+      };
+      setStatus(`Location: ${reasons[err.code] || err.message}`, "err");
+    },
     { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 }
   );
+});
+
+async function geocodeZipBrowser(zip) {
+  const resp = await fetch(`https://api.zippopotam.us/us/${zip}`, {
+    headers: { Accept: "application/json" },
+  });
+  if (!resp.ok) throw new Error(`zippopotam HTTP ${resp.status}`);
+  const data = await resp.json();
+  const p = (data.places || [])[0];
+  if (!p) throw new Error("no places returned");
+  return {
+    lat: parseFloat(p.latitude),
+    lng: parseFloat(p.longitude),
+    label: `${p["place name"]}, ${p["state abbreviation"]}`,
+  };
+}
+
+els.zipUpdate?.addEventListener("click", async () => {
+  const zip = (els.zipEntry.value || "").trim();
+  els.lookupSnippet.hidden = true;
+  if (!/^\d{5}$/.test(zip)) {
+    els.lookupStatus.textContent = "Enter a 5-digit ZIP";
+    els.lookupStatus.className = "status err";
+    return;
+  }
+  const tracked = (index?.zips || []).find((z) => z.zip === zip);
+  if (tracked) {
+    els.zip.value = zip;
+    els.lookupStatus.textContent = `${tracked.label} is tracked — loading…`;
+    els.lookupStatus.className = "status ok";
+    showZip(zip);
+    return;
+  }
+  els.lookupStatus.textContent = "Looking up coordinates…";
+  els.lookupStatus.className = "status";
+  try {
+    const { lat, lng, label } = await geocodeZipBrowser(zip);
+    const cacheEntry = `  "${zip}": { "lat": ${lat}, "lng": ${lng}, "label": ${JSON.stringify(label)} }`;
+    els.lookupStatus.innerHTML =
+      `<strong>${escapeHtml(label)}</strong> isn't tracked yet. ` +
+      `Add it to <code>costco_gas/config.json</code> (zips array) ` +
+      `and <code>costco_gas/zip_cache.json</code>:`;
+    els.lookupStatus.className = "status";
+    els.lookupSnippet.textContent =
+      `// costco_gas/config.json — add to "zips":\n` +
+      `"${zip}"\n\n` +
+      `// costco_gas/zip_cache.json — add this entry:\n` +
+      `{\n${cacheEntry}\n}`;
+    els.lookupSnippet.hidden = false;
+  } catch (err) {
+    els.lookupStatus.textContent = `Lookup failed: ${err.message}`;
+    els.lookupStatus.className = "status err";
+  }
 });
 
 if ("serviceWorker" in navigator) {

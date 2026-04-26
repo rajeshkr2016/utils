@@ -137,6 +137,57 @@ section h2 {
   font-size: 0.9rem;
 }
 
+.lookup {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 8px 12px;
+  margin: 8px 0;
+}
+
+.lookup summary {
+  cursor: pointer;
+  color: var(--muted);
+  padding: 4px 0;
+  list-style: none;
+}
+
+.lookup summary::-webkit-details-marker { display: none; }
+
+.lookup summary::before {
+  content: "▸ ";
+  display: inline-block;
+  margin-right: 4px;
+}
+
+.lookup[open] summary::before {
+  content: "▾ ";
+}
+
+.lookup #zip-update {
+  flex: 0 0 auto;
+  min-width: 0;
+  padding: 8px 14px;
+}
+
+.lookup pre {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 0.85rem;
+  overflow-x: auto;
+  margin: 8px 0 4px;
+  white-space: pre;
+}
+
+.lookup code {
+  background: var(--bg);
+  padding: 1px 4px;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
 .table-wrap {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;

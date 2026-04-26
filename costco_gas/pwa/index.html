@@ -46,6 +46,17 @@
     </div>
   </form>
 
+  <details id="lookup-section" class="lookup">
+    <summary>Look up another ZIP</summary>
+    <div class="row">
+      <label for="zip-entry">ZIP code</label>
+      <input id="zip-entry" type="text" inputmode="numeric" pattern="\d{5}" maxlength="5" placeholder="e.g. 95134" />
+      <button type="button" id="zip-update">Update</button>
+    </div>
+    <p id="lookup-status" class="status" role="status" aria-live="polite"></p>
+    <pre id="lookup-snippet" hidden></pre>
+  </details>
+
   <p id="status" class="status" role="status" aria-live="polite"></p>
 
   <section id="results" hidden>
