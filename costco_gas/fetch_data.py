@@ -218,8 +218,20 @@ def main() -> int:
     cache_dirty = False
     print(f"Loaded zip_cache.json: {sorted(cache.keys()) or '(empty)'}", file=sys.stderr)
 
+    # Load any existing index so we can preserve entries on partial failure.
+    index_path = DATA_DIR / "index.json"
+    existing_by_zip: dict[str, dict] = {}
+    if index_path.exists():
+        try:
+            for entry in json.loads(index_path.read_text()).get("zips", []):
+                if isinstance(entry, dict) and entry.get("zip"):
+                    existing_by_zip[entry["zip"]] = entry
+        except (json.JSONDecodeError, OSError):
+            pass
+
     now = datetime.now(timezone.utc).isoformat(timespec="minutes").replace("+00:00", "Z")
-    index = {"updated": now, "radius": radius, "zips": [], "errors": {}}
+    succeeded: dict[str, dict] = {}
+    errors: dict[str, str] = {}
 
     for zip_code in zips:
         try:
@@ -232,21 +244,37 @@ def main() -> int:
         except Exception as e:
             print(f"[{zip_code}] failed ({type(e).__name__}): {e}", file=sys.stderr)
             traceback.print_exc()
-            index["errors"][zip_code] = str(e)
+            errors[zip_code] = str(e)
             continue
 
         write_snapshot(zip_code, lat, lng, label, filtered, radius, now)
         append_history(zip_code, filtered, now)
-        index["zips"].append({"zip": zip_code, "lat": lat, "lng": lng, "label": label})
+        succeeded[zip_code] = {"zip": zip_code, "lat": lat, "lng": lng, "label": label}
         print(f"[{zip_code}] {label}: {len(filtered)} stations within {radius}mi")
 
     if cache_dirty:
         save_zip_cache(cache)
 
-    (DATA_DIR / "index.json").write_text(json.dumps(index, indent=2))
+    # Merge: prefer fresh successes, fall back to existing entries for zips
+    # that failed this run but were known before. Only rewrite index.json if
+    # we have at least one fresh success — otherwise the prior good data stays.
+    if succeeded:
+        merged_zips = []
+        for zip_code in zips:
+            if zip_code in succeeded:
+                merged_zips.append(succeeded[zip_code])
+            elif zip_code in existing_by_zip:
+                merged_zips.append(existing_by_zip[zip_code])
+        index_path.write_text(json.dumps({
+            "updated": now,
+            "radius": radius,
+            "zips": merged_zips,
+            "errors": errors,
+        }, indent=2))
+    else:
+        print("No zips succeeded — leaving existing index.json untouched.", file=sys.stderr)
 
-    if zips and not index["zips"]:
-        print("All zips failed.", file=sys.stderr)
+    if zips and not succeeded:
         return 1
     return 0
 
