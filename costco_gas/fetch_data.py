@@ -13,6 +13,7 @@ Output files:
 
 import json
 import sys
+import time
 import traceback
 from datetime import datetime, timezone
 from pathlib import Path
@@ -78,25 +79,47 @@ def geocode_zip(zip_code: str, cache: dict) -> tuple[float, float, str]:
 
 
 def fetch_costco(lat: float, lng: float, num: int = 50) -> list[dict]:
-    resp = cffi_requests.get(
-        COSTCO_API_URL,
-        params={
-            "numOfWarehouses": str(num),
-            "hasGas": "true",
-            "populateWarehouseDetails": "true",
-            "latitude": str(lat),
-            "longitude": str(lng),
-            "countryCode": "US",
-        },
-        headers={
-            "Accept": "application/json, text/plain, */*",
-            "Accept-Language": "en-US,en;q=0.9",
-            "Referer": "https://www.costco.com/warehouse-locations",
-        },
-        impersonate="chrome",
-        timeout=20,
-    )
-    resp.raise_for_status()
+    common_headers = {
+        "Accept-Language": "en-US,en;q=0.9",
+    }
+    api_headers = {
+        **common_headers,
+        "Accept": "application/json, text/plain, */*",
+        "Referer": "https://www.costco.com/warehouse-locations",
+    }
+    api_params = {
+        "numOfWarehouses": str(num),
+        "hasGas": "true",
+        "populateWarehouseDetails": "true",
+        "latitude": str(lat),
+        "longitude": str(lng),
+        "countryCode": "US",
+    }
+
+    last_err = None
+    for attempt in range(2):
+        try:
+            resp = cffi_requests.get(
+                COSTCO_API_URL,
+                params=api_params,
+                headers=api_headers,
+                impersonate="chrome",
+                timeout=20,
+            )
+            resp.raise_for_status()
+            break
+        except Exception as e:
+            last_err = e
+            status = getattr(getattr(e, "response", None), "status_code", None)
+            if attempt == 0 and status == 429:
+                print("Costco returned 429; sleeping 30s before single retry",
+                      file=sys.stderr)
+                time.sleep(30)
+                continue
+            raise
+    else:
+        raise last_err
+
     raw = resp.json()
     if not isinstance(raw, list) or len(raw) < 2:
         raise RuntimeError("Unexpected upstream shape")
