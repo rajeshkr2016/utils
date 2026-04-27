@@ -5,8 +5,8 @@
     "lat": 37.683,
     "lng": -121.763
   },
-  "radius": 25.0,
-  "updated": "2026-04-25T23:46Z",
+  "radius": 100.0,
+  "updated": "2026-04-27T19:19Z",
   "warehouses": [
     {
       "id": 146,
@@ -16,8 +16,8 @@
       "latitude": 37.703,
       "longitude": -121.812,
       "distance": 3.0123640224838435,
-      "regular": 5.499,
-      "premium": 5.899
+      "regular": 5.599,
+      "premium": 6.099
     },
     {
       "id": 1341,
@@ -27,7 +27,7 @@
       "latitude": 37.695,
       "longitude": -121.917,
       "distance": 8.455179506644422,
-      "regular": 5.599,
+      "regular": 5.659,
       "premium": 5.999
     },
     {
@@ -38,8 +38,8 @@
       "latitude": 37.782,
       "longitude": -121.973,
       "distance": 13.350307044446241,
-      "regular": 5.649,
-      "premium": 5.999
+      "regular": 5.759,
+      "premium": 6.299
     },
     {
       "id": 658,
@@ -49,8 +49,8 @@
       "latitude": 37.751,
       "longitude": -121.475,
       "distance": 16.415991944649637,
-      "regular": 5.199,
-      "premium": 5.659
+      "regular": 5.359,
+      "premium": 5.799
     },
     {
       "id": 1660,
@@ -60,7 +60,7 @@
       "latitude": 37.526,
       "longitude": -121.999,
       "distance": 16.857356019794384,
-      "regular": 5.159,
+      "regular": 5.199,
       "premium": 5.699
     },
     {
@@ -71,8 +71,8 @@
       "latitude": 37.502,
       "longitude": -121.973,
       "distance": 16.976105939473985,
-      "regular": 5.059,
-      "premium": 5.459
+      "regular": 5.159,
+      "premium": 5.559
     },
     {
       "id": 1061,
@@ -82,8 +82,8 @@
       "latitude": 37.615,
       "longitude": -122.09,
       "distance": 18.48303572350776,
-      "regular": 5.359,
-      "premium": 5.759
+      "regular": 5.459,
+      "premium": 5.859
     },
     {
       "id": 823,
@@ -93,8 +93,8 @@
       "latitude": 37.668,
       "longitude": -122.103,
       "distance": 18.609648915153265,
-      "regular": 5.359,
-      "premium": 5.759
+      "regular": 5.459,
+      "premium": 5.859
     },
     {
       "id": 1662,
@@ -104,8 +104,8 @@
       "latitude": 37.957,
       "longitude": -121.746,
       "distance": 18.941516692098926,
-      "regular": 5.359,
-      "premium": 5.759
+      "regular": 5.459,
+      "premium": 5.859
     },
     {
       "id": 1004,
@@ -115,63 +115,8 @@
       "latitude": 37.39,
       "longitude": -121.884,
       "distance": 21.287808957011332,
-      "regular": 5.299,
-      "premium": 5.699
-    },
-    {
-      "id": 1002,
-      "name": "Antioch",
-      "address": "2201 VERNE ROBERTS CIR, ANTIOCH, CA 94509-7911",
-      "phone": "(925) 757-7130",
-      "latitude": 38.009,
-      "longitude": -121.836,
-      "distance": 22.858432076014225,
       "regular": 5.359,
       "premium": 5.759
-    },
-    {
-      "id": 118,
-      "name": "San Leandro",
-      "address": "1900 DAVIS ST, SAN LEANDRO, CA 94577-1209",
-      "phone": "(510) 562-6708",
-      "latitude": 37.72,
-      "longitude": -122.182,
-      "distance": 23.032201074474518,
-      "regular": 5.399,
-      "premium": 5.799
-    },
-    {
-      "id": 663,
-      "name": "Concord",
-      "address": "2400 MONUMENT BLVD, CONCORD, CA 94520-3105",
-      "phone": "(925) 566-4003",
-      "latitude": 37.958,
-      "longitude": -122.033,
-      "distance": 24.029279667024248,
-      "regular": 5.399,
-      "premium": 5.859
-    },
-    {
-      "id": 129,
-      "name": "Santa Clara",
-      "address": "1601 COLEMAN AVE, SANTA CLARA, CA 95050-3122",
-      "phone": "(408) 567-9000",
-      "latitude": 37.357,
-      "longitude": -121.939,
-      "distance": 24.48600414001395,
-      "regular": 5.299,
-      "premium": 5.699
-    },
-    {
-      "id": 423,
-      "name": "Sunnyvale",
-      "address": "150 LAWRENCE STATION RD, SUNNYVALE, CA 94086-5309",
-      "phone": "(408) 730-1892",
-      "latitude": 37.372,
-      "longitude": -121.995,
-      "distance": 24.949975726475046,
-      "regular": 5.239,
-      "premium": 5.639
     }
   ]
 }
