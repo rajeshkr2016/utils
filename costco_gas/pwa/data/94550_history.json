@@ -573,5 +573,60 @@
         "distance": 21.287808957011332
       }
     }
+  },
+  {
+    "timestamp": "2026-05-01T02:55Z",
+    "prices": {
+      "Livermore": {
+        "regular": 5.749,
+        "premium": 6.199,
+        "distance": 3.0123640224838435
+      },
+      "Pleasanton": {
+        "regular": 5.899,
+        "premium": 6.399,
+        "distance": 8.455179506644422
+      },
+      "Danville": {
+        "regular": 5.999,
+        "premium": 6.459,
+        "distance": 13.350307044446241
+      },
+      "Tracy": {
+        "regular": 5.459,
+        "premium": 5.899,
+        "distance": 16.415991944649637
+      },
+      "Newark": {
+        "regular": 5.299,
+        "premium": 5.799,
+        "distance": 16.857356019794384
+      },
+      "Fremont": {
+        "regular": 5.299,
+        "premium": 5.749,
+        "distance": 16.976105939473985
+      },
+      "Hayward": {
+        "regular": 5.459,
+        "premium": 6.099,
+        "distance": 18.48303572350776
+      },
+      "Hayward Business Center": {
+        "regular": 5.499,
+        "premium": 5.949,
+        "distance": 18.609648915153265
+      },
+      "Brentwood CA": {
+        "regular": 5.499,
+        "premium": 5.959,
+        "distance": 18.941516692098926
+      },
+      "NE San Jose": {
+        "regular": 5.499,
+        "premium": 6.049,
+        "distance": 21.287808957011332
+      }
+    }
   }
 ]
