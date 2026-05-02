@@ -1,7 +1,7 @@
-// Minimal service worker: cache the app shell so the page loads offline.
-// Live data calls (worker proxy, Nominatim) are network-only.
+// Network-first service worker. Online visits always see the latest deploy;
+// the cache is the offline fallback only.
 
-const CACHE = "costco-gas-shell-v1";
+const CACHE = "costco-gas-shell-v2";
 const SHELL = [
   "./",
   "index.html",
@@ -11,26 +11,38 @@ const SHELL = [
   "icon.svg",
 ];
 
-self.addEventListener("install", (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)));
+self.addEventListener("install", (event) => {
+  event.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)));
   self.skipWaiting();
 });
 
-self.addEventListener("activate", (e) => {
-  e.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)))
-    )
-  );
-  self.clients.claim();
+self.addEventListener("activate", (event) => {
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)));
+    await self.clients.claim();
+  })());
 });
 
-self.addEventListener("fetch", (e) => {
-  const url = new URL(e.request.url);
-  if (e.request.method !== "GET") return;
-  // Only cache same-origin shell assets.
+self.addEventListener("fetch", (event) => {
+  const url = new URL(event.request.url);
+  if (event.request.method !== "GET") return;
   if (url.origin !== self.location.origin) return;
-  e.respondWith(
-    caches.match(e.request).then((hit) => hit || fetch(e.request))
-  );
+
+  event.respondWith((async () => {
+    try {
+      // cache: "no-cache" still uses HTTP cache but revalidates with the
+      // origin (ETag / Last-Modified), so unchanged assets come back as 304.
+      const fresh = await fetch(event.request, { cache: "no-cache" });
+      if (fresh && fresh.status === 200) {
+        const copy = fresh.clone();
+        caches.open(CACHE).then((c) => c.put(event.request, copy));
+      }
+      return fresh;
+    } catch {
+      const cached = await caches.match(event.request);
+      if (cached) return cached;
+      throw new Error("Network failed and no cache available");
+    }
+  })());
 });
