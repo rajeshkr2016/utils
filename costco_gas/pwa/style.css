@@ -188,6 +188,64 @@ section h2 {
   font-size: 0.9em;
 }
 
+.cheapest {
+  display: grid;
+  gap: 8px;
+  margin: 8px 0 12px;
+}
+
+.cheapest-card {
+  background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 70%, #000));
+  color: var(--accent-fg);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.cheapest-label {
+  font-size: 0.8rem;
+  opacity: 0.85;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.cheapest-price {
+  font-size: 1.7rem;
+  font-weight: 700;
+  margin: 2px 0 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.cheapest-prices {
+  display: flex;
+  gap: 16px;
+  margin: 4px 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  flex-wrap: wrap;
+}
+
+.cheapest-prices em {
+  font-style: normal;
+  font-size: 0.7rem;
+  font-weight: 500;
+  opacity: 0.85;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-right: 4px;
+}
+
+.cheapest-where {
+  font-size: 0.95rem;
+  margin-top: 4px;
+}
+
+.cheapest-addr {
+  font-size: 0.8rem;
+  opacity: 0.85;
+  margin-top: 2px;
+}
+
 .table-wrap {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;

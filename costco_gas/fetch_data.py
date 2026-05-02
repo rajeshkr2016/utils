@@ -78,7 +78,9 @@ def geocode_zip(zip_code: str, cache: dict) -> tuple[float, float, str]:
     return lat, lng, label
 
 
-def fetch_costco(lat: float, lng: float, num: int = 100) -> list[dict]:
+def fetch_costco(lat: float, lng: float, num: int = 50) -> list[dict]:
+    # Costco's API silently misbehaves above ~50 (returns far fewer rows).
+    num = min(num, 50)
     common_headers = {
         "Accept-Language": "en-US,en;q=0.9",
     }

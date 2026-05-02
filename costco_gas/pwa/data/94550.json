@@ -6,7 +6,7 @@
     "lng": -121.763
   },
   "radius": 100.0,
-  "updated": "2026-05-01T06:16Z",
+  "updated": "2026-05-02T06:12Z",
   "warehouses": [
     {
       "id": 146,
@@ -16,7 +16,7 @@
       "latitude": 37.703,
       "longitude": -121.812,
       "distance": 3.0123640224838435,
-      "regular": 5.749,
+      "regular": 5.759,
       "premium": 6.199
     },
     {
@@ -38,8 +38,8 @@
       "latitude": 37.782,
       "longitude": -121.973,
       "distance": 13.350307044446241,
-      "regular": 5.999,
-      "premium": 6.459
+      "regular": 6.059,
+      "premium": 6.559
     },
     {
       "id": 658,
@@ -49,8 +49,8 @@
       "latitude": 37.751,
       "longitude": -121.475,
       "distance": 16.415991944649637,
-      "regular": 5.459,
-      "premium": 5.899
+      "regular": 5.559,
+      "premium": 5.999
     },
     {
       "id": 1660,
@@ -93,8 +93,8 @@
       "latitude": 37.668,
       "longitude": -122.103,
       "distance": 18.609648915153265,
-      "regular": 5.499,
-      "premium": 5.949
+      "regular": 5.559,
+      "premium": 5.999
     },
     {
       "id": 1662,
@@ -104,8 +104,8 @@
       "latitude": 37.957,
       "longitude": -121.746,
       "distance": 18.941516692098926,
-      "regular": 5.499,
-      "premium": 5.959
+      "regular": 5.599,
+      "premium": 6.099
     },
     {
       "id": 1004,
@@ -115,8 +115,415 @@
       "latitude": 37.39,
       "longitude": -121.884,
       "distance": 21.287808957011332,
+      "regular": 5.559,
+      "premium": 6.059
+    },
+    {
+      "id": 1002,
+      "name": "Antioch",
+      "address": "2201 VERNE ROBERTS CIR, ANTIOCH, CA 94509-7911",
+      "phone": "(925) 757-7130",
+      "latitude": 38.009,
+      "longitude": -121.836,
+      "distance": 22.858432076014225,
+      "regular": 5.599,
+      "premium": 6.099
+    },
+    {
+      "id": 118,
+      "name": "San Leandro",
+      "address": "1900 DAVIS ST, SAN LEANDRO, CA 94577-1209",
+      "phone": "(510) 562-6708",
+      "latitude": 37.72,
+      "longitude": -122.182,
+      "distance": 23.032201074474518,
+      "regular": 5.599,
+      "premium": 5.999
+    },
+    {
+      "id": 663,
+      "name": "Concord",
+      "address": "2400 MONUMENT BLVD, CONCORD, CA 94520-3105",
+      "phone": "(925) 566-4003",
+      "latitude": 37.958,
+      "longitude": -122.033,
+      "distance": 24.029279667024248,
+      "regular": 5.699,
+      "premium": 6.159
+    },
+    {
+      "id": 129,
+      "name": "Santa Clara",
+      "address": "1601 COLEMAN AVE, SANTA CLARA, CA 95050-3122",
+      "phone": "(408) 567-9000",
+      "latitude": 37.357,
+      "longitude": -121.939,
+      "distance": 24.48600414001395,
       "regular": 5.499,
-      "premium": 6.049
+      "premium": 5.899
+    },
+    {
+      "id": 423,
+      "name": "Sunnyvale",
+      "address": "150 LAWRENCE STATION RD, SUNNYVALE, CA 94086-5309",
+      "phone": "(408) 730-1892",
+      "latitude": 37.372,
+      "longitude": -121.995,
+      "distance": 24.949975726475046,
+      "regular": 5.559,
+      "premium": 5.999
+    },
+    {
+      "id": 848,
+      "name": "San Jose Business Center",
+      "address": "2376 S EVERGREEN LOOP, SAN JOSE, CA 95122-4030",
+      "phone": "(669) 236-4679",
+      "latitude": 37.318,
+      "longitude": -121.811,
+      "distance": 25.338850504011713,
+      "regular": 5.349,
+      "premium": 5.749
+    },
+    {
+      "id": 148,
+      "name": "San Jose",
+      "address": "2201 SENTER RD, SAN JOSE, CA 95112-2627",
+      "phone": "(408) 275-0199",
+      "latitude": 37.31,
+      "longitude": -121.851,
+      "distance": 26.20172124130785,
+      "regular": 5.449,
+      "premium": 5.959
+    },
+    {
+      "id": 1031,
+      "name": "Manteca",
+      "address": "2440 DANIELS ST, MANTECA, CA 95337-6745",
+      "phone": "(209) 825-8200",
+      "latitude": 37.785,
+      "longitude": -121.26,
+      "distance": 28.35548992910505,
+      "regular": 5.499,
+      "premium": 5.959
+    },
+    {
+      "id": 1042,
+      "name": "Redwood City",
+      "address": "2300 MIDDLEFIELD RD, REDWOOD CITY, CA 94063-2854",
+      "phone": "(650) 568-4040",
+      "latitude": 37.479,
+      "longitude": -122.216,
+      "distance": 28.510164836033187,
+      "regular": 5.799,
+      "premium": 6.259
+    },
+    {
+      "id": 1267,
+      "name": "Great Oaks",
+      "address": "6898 RALEIGH ROAD, SAN JOSE, CA 95119-1730",
+      "phone": "(408) 908-7929",
+      "latitude": 37.244,
+      "longitude": -121.786,
+      "distance": 30.337719301320263,
+      "regular": 5.499,
+      "premium": 5.899
+    },
+    {
+      "id": 482,
+      "name": "Richmond CA",
+      "address": "4801 CENTRAL AVENUE, RICHMOND, CA 94804-5801",
+      "phone": "(510) 898-2003",
+      "latitude": 37.898,
+      "longitude": -122.321,
+      "distance": 33.8732048977727,
+      "regular": 5.859,
+      "premium": 6.399
+    },
+    {
+      "id": 38,
+      "name": "Stockton",
+      "address": "1616 E HAMMER LN, STOCKTON, CA 95210-4119",
+      "phone": "(209) 478-2040",
+      "latitude": 38.019,
+      "longitude": -121.292,
+      "distance": 34.606721646897405,
+      "regular": 5.599,
+      "premium": 6.259
+    },
+    {
+      "id": 422,
+      "name": "S San Francisco",
+      "address": "451 S AIRPORT BLVD, SOUTH SAN FRANCISCO, CA 94080-6909",
+      "phone": "(650) 872-2021",
+      "latitude": 37.642,
+      "longitude": -122.401,
+      "distance": 34.98711141231791,
+      "regular": 5.699,
+      "premium": 6.149
+    },
+    {
+      "id": 475,
+      "name": "El Camino",
+      "address": "1600 EL CAMINO REAL, SOUTH SAN FRANCISCO, CA 94080-1206",
+      "phone": "(650) 757-3003",
+      "latitude": 37.665,
+      "longitude": -122.448,
+      "distance": 37.45617843473724,
+      "regular": 5.699,
+      "premium": 6.159
+    },
+    {
+      "id": 661,
+      "name": "Modesto",
+      "address": "3801 PELANDALE AVE, MODESTO, CA 95356-8300",
+      "phone": "(209) 342-4903",
+      "latitude": 37.702,
+      "longitude": -121.067,
+      "distance": 38.049842416187595,
+      "regular": 5.699,
+      "premium": 6.199
+    },
+    {
+      "id": 1091,
+      "name": "Lodi",
+      "address": "2680 REYNOLDS RANCH PKWY, LODI, CA 95240-6848",
+      "phone": "(209) 366-7300",
+      "latitude": 38.1,
+      "longitude": -121.264,
+      "distance": 39.60201981558836,
+      "regular": 5.759,
+      "premium": 6.249
+    },
+    {
+      "id": 132,
+      "name": "Vallejo",
+      "address": "198 PLAZA DR, VALLEJO, CA 94591-3702",
+      "phone": "(707) 553-6400",
+      "latitude": 38.133,
+      "longitude": -122.214,
+      "distance": 39.611340333851615,
+      "regular": 5.599,
+      "premium": 6.149
+    },
+    {
+      "id": 453,
+      "name": "Fairfield",
+      "address": "5101 BUSINESS CENTER DR, FAIRFIELD, CA 94534-1624",
+      "phone": "(707) 864-3816",
+      "latitude": 38.215,
+      "longitude": -122.145,
+      "distance": 42.212423450354926,
+      "regular": 5.899,
+      "premium": 6.499
+    },
+    {
+      "id": 1683,
+      "name": "Riverbank",
+      "address": "2015 CLARIBEL ROAD, RIVERBANK, CA 95367-9001",
+      "phone": "(209) 458-5587",
+      "latitude": 37.711,
+      "longitude": -120.969,
+      "distance": 43.422024210376335,
+      "regular": 5.399,
+      "premium": 5.999
+    },
+    {
+      "id": 694,
+      "name": "Vacaville",
+      "address": "1051 HUME WAY, VACAVILLE, CA 95687-5558",
+      "phone": "(707) 453-7343",
+      "latitude": 38.351,
+      "longitude": -121.98,
+      "distance": 47.609717333425834,
+      "regular": 5.799,
+      "premium": 6.259
+    },
+    {
+      "id": 760,
+      "name": "Gilroy",
+      "address": "7251 CAMINO ARROYO, GILROY, CA 95020-7340",
+      "phone": "(408) 848-0700",
+      "latitude": 37.008,
+      "longitude": -121.556,
+      "distance": 47.97160092582696,
+      "regular": 5.649,
+      "premium": 6.099
+    },
+    {
+      "id": 1679,
+      "name": "Napa",
+      "address": "280 RIVERSOUND WAY, NAPA, CA 94558-6357",
+      "phone": "(707) 819-5900",
+      "latitude": 38.252,
+      "longitude": -122.279,
+      "distance": 48.295117789962696,
+      "regular": 5.699,
+      "premium": 6.199
+    },
+    {
+      "id": 782,
+      "name": "Turlock",
+      "address": "2955 N TEGNER RD, TURLOCK, CA 95380-9401",
+      "phone": "(209) 656-5301",
+      "latitude": 37.519,
+      "longitude": -120.888,
+      "distance": 49.18721797504146,
+      "regular": 5.659,
+      "premium": 6.359
+    },
+    {
+      "id": 149,
+      "name": "Santa Cruz",
+      "address": "220 SYLVANIA AVE, SANTA CRUZ, CA 95060-2161",
+      "phone": "(831) 469-0961",
+      "latitude": 36.985,
+      "longitude": -122.033,
+      "distance": 50.422574820419854,
+      "regular": 5.799,
+      "premium": 6.299
+    },
+    {
+      "id": 1274,
+      "name": "Elk Grove",
+      "address": "7400 ELK GROVE BLVD, ELK GROVE, CA 95757-6299",
+      "phone": "(916) 465-6050",
+      "latitude": 38.406,
+      "longitude": -121.414,
+      "distance": 53.406125603162,
+      "regular": 5.639,
+      "premium": 6.139
+    },
+    {
+      "id": 464,
+      "name": "Sacramento",
+      "address": "7981 E STOCKTON BLVD, SACRAMENTO, CA 95823-9606",
+      "phone": "(916) 682-3569",
+      "latitude": 38.468,
+      "longitude": -121.414,
+      "distance": 57.42512171955736,
+      "regular": 5.499,
+      "premium": 5.899
+    },
+    {
+      "id": 471,
+      "name": "Cal Expo",
+      "address": "1600 EXPO PKWY, SACRAMENTO, CA 95815-4228",
+      "phone": "(916) 830-1078",
+      "latitude": 38.597,
+      "longitude": -121.453,
+      "distance": 65.31540092715724,
+      "regular": 5.659,
+      "premium": 6.159
+    },
+    {
+      "id": 438,
+      "name": "Rancho Cordova",
+      "address": "11260 WHITE ROCK RD, RANCHO CORDOVA, CA 95742-6571",
+      "phone": "(916) 724-2240",
+      "latitude": 38.588,
+      "longitude": -121.264,
+      "distance": 68.11046520888623,
+      "regular": 5.659,
+      "premium": 6.199
+    },
+    {
+      "id": 1003,
+      "name": "Woodland",
+      "address": "2299 BRONZE STAR DR, WOODLAND, CA 95776-5409",
+      "phone": "(530) 406-2120",
+      "latitude": 38.672,
+      "longitude": -121.723,
+      "distance": 68.32173390065627,
+      "regular": 5.599,
+      "premium": 5.999
+    },
+    {
+      "id": 659,
+      "name": "Rohnert Park",
+      "address": "5901 REDWOOD DR, ROHNERT PARK, CA 94928-2076",
+      "phone": "(707) 540-9113",
+      "latitude": 38.353,
+      "longitude": -122.717,
+      "distance": 69.5196790801029,
+      "regular": 5.999,
+      "premium": 6.399
+    },
+    {
+      "id": 41,
+      "name": "Santa Rosa",
+      "address": "1900 SANTA ROSA AVE, SANTA ROSA, CA 95407-7621",
+      "phone": "(707) 578-3775",
+      "latitude": 38.42,
+      "longitude": -122.712,
+      "distance": 72.46931150141518,
+      "regular": 5.899,
+      "premium": 6.459
+    },
+    {
+      "id": 131,
+      "name": "Sand City",
+      "address": "801 TIOGA AVE, SAND CITY, CA 93955-3050",
+      "phone": "(831) 899-1255",
+      "latitude": 36.617,
+      "longitude": -121.845,
+      "distance": 73.74203485857315,
+      "regular": 5.799,
+      "premium": 6.159
+    },
+    {
+      "id": 771,
+      "name": "Citrus Heights",
+      "address": "7000 AUBURN BLVD, CITRUS HEIGHTS, CA 95621-4342",
+      "phone": "(916) 560-4003",
+      "latitude": 38.69,
+      "longitude": -121.298,
+      "distance": 73.96781352256868,
+      "regular": 5.499,
+      "premium": 5.999
+    },
+    {
+      "id": 142,
+      "name": "Merced",
+      "address": "1445 R ST, MERCED, CA 95340-5850",
+      "phone": "(209) 725-5020",
+      "latitude": 37.303,
+      "longitude": -120.497,
+      "distance": 74.15226965957527,
+      "regular": 5.659,
+      "premium": 6.199
+    },
+    {
+      "id": 765,
+      "name": "Folsom",
+      "address": "1800 CAVITT DR, FOLSOM, CA 95630-6235",
+      "phone": "(916) 850-1000",
+      "latitude": 38.645,
+      "longitude": -121.11,
+      "distance": 75.29019579149923,
+      "regular": 5.799,
+      "premium": 6.299
+    },
+    {
+      "id": 1702,
+      "name": "W Roseville CA",
+      "address": "5200 BASELINE ROAD, ROSEVILLE, CA 95747-0000",
+      "phone": "(916) 297-6420",
+      "latitude": 38.754,
+      "longitude": -121.366,
+      "distance": 77.02095720623167,
+      "regular": 5.499,
+      "premium": 5.899
+    },
+    {
+      "id": 29,
+      "name": "Roseville CA",
+      "address": "6750 STANFORD RANCH RD, ROSEVILLE, CA 95678-1907",
+      "phone": "(916) 789-1485",
+      "latitude": 38.78,
+      "longitude": -121.267,
+      "distance": 80.37931637893304,
+      "regular": 5.599,
+      "premium": 5.999
     }
   ]
 }

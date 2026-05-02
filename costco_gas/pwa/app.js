@@ -17,6 +17,7 @@ const els = {
   resultsBody: document.querySelector("#results-table tbody"),
   resultsTitle: $("results-title"),
   snapshotMeta: $("snapshot-meta"),
+  cheapest: $("cheapest"),
   historySection: $("history-section"),
   historyCount: $("history-count"),
   historyChart: $("history-chart"),
@@ -117,6 +118,7 @@ function renderSnapshot() {
   els.resultsTitle.textContent = `${snap.label} — latest snapshot`;
   els.snapshotMeta.textContent =
     `Updated ${formatTs(snap.updated)} · ${filtered.length} of ${snap.warehouses.length} station(s) within ${radius} mi`;
+  renderCheapest(filtered, radius);
   els.resultsBody.innerHTML = "";
   for (let i = 0; i < filtered.length; i++) {
     const w = filtered[i];
@@ -134,6 +136,62 @@ function renderSnapshot() {
     els.resultsBody.appendChild(tr);
   }
   els.results.hidden = false;
+}
+
+function renderCheapest(filtered, radius) {
+  const cheapestBy = (key) => {
+    let best = null;
+    for (const w of filtered) {
+      if (w[key] === null || w[key] === undefined) continue;
+      if (!best || w[key] < best[key]) best = w;
+    }
+    return best;
+  };
+  const reg = cheapestBy("regular");
+  const pre = cheapestBy("premium");
+
+  if (!reg && !pre) {
+    els.cheapest.hidden = true;
+    els.cheapest.innerHTML = "";
+    return;
+  }
+
+  const card = (label, w, key) => {
+    if (!w) return "";
+    const same = reg && pre && reg.id === pre.id && key === "premium";
+    if (same) return "";
+    return `
+      <div class="cheapest-card">
+        <div class="cheapest-label">${label}</div>
+        <div class="cheapest-price">${fmtPrice(w[key])}</div>
+        <div class="cheapest-where">
+          <strong>${escapeHtml(w.name)}</strong> · ${(w.distance ?? 0).toFixed(1)} mi
+        </div>
+        <div class="cheapest-addr">${escapeHtml(w.address)}</div>
+      </div>`;
+  };
+
+  const samePlace = reg && pre && reg.id === pre.id;
+  let inner = "";
+  if (samePlace) {
+    inner = `
+      <div class="cheapest-card">
+        <div class="cheapest-label">Cheapest within ${radius} mi</div>
+        <div class="cheapest-prices">
+          <span><em>Regular</em> ${fmtPrice(reg.regular)}</span>
+          <span><em>Premium</em> ${fmtPrice(reg.premium)}</span>
+        </div>
+        <div class="cheapest-where">
+          <strong>${escapeHtml(reg.name)}</strong> · ${(reg.distance ?? 0).toFixed(1)} mi
+        </div>
+        <div class="cheapest-addr">${escapeHtml(reg.address)}</div>
+      </div>`;
+  } else {
+    inner = card(`Cheapest Regular within ${radius} mi`, reg, "regular")
+          + card(`Cheapest Premium within ${radius} mi`, pre, "premium");
+  }
+  els.cheapest.innerHTML = inner;
+  els.cheapest.hidden = false;
 }
 
 function renderHistory(history) {
