@@ -104,6 +104,38 @@ async function showZip(zip) {
   }
 }
 
+async function showSessionView(sourceZip, origin) {
+  setBusy(true);
+  setStatus(`Loading session view for ${origin.label}…`);
+  try {
+    const snap = await fetchJSON(`${DATA_DIR}/${sourceZip}.json`);
+    const recentered = {
+      ...snap,
+      label: origin.label,
+      origin: { lat: origin.lat, lng: origin.lng },
+      sourceLabel: snap.label,
+      warehouses: snap.warehouses
+        .map((w) => {
+          if (w.latitude == null || w.longitude == null) return w;
+          const d = haversineMi(
+            { lat: origin.lat, lng: origin.lng },
+            { lat: Number(w.latitude), lng: Number(w.longitude) },
+          );
+          return { ...w, distance: d };
+        })
+        .sort((a, b) => (a.distance ?? 999) - (b.distance ?? 999)),
+    };
+    currentSnapshot = recentered;
+    renderSnapshot();
+    els.historySection.hidden = true;
+    setStatus(`Session view: ${origin.label} (using ${snap.label} snapshot)`, "ok");
+  } catch (err) {
+    setStatus(err.message || "Failed to load", "err");
+  } finally {
+    setBusy(false);
+  }
+}
+
 function getRadius() {
   const r = Number(els.radius.value);
   return Number.isFinite(r) && r > 0 ? r : 25;
@@ -115,9 +147,15 @@ function renderSnapshot() {
   const radius = getRadius();
   const filtered = snap.warehouses.filter((w) => (w.distance ?? 999) <= radius);
 
-  els.resultsTitle.textContent = `${snap.label} — latest snapshot`;
-  els.snapshotMeta.textContent =
+  const isSession = Boolean(snap.sourceLabel);
+  els.resultsTitle.textContent = isSession
+    ? `${snap.label} — session view`
+    : `${snap.label} — latest snapshot`;
+  const baseMeta =
     `Updated ${formatTs(snap.updated)} · ${filtered.length} of ${snap.warehouses.length} station(s) within ${radius} mi`;
+  els.snapshotMeta.textContent = isSession
+    ? `Based on ${snap.sourceLabel} snapshot · distances re-centered · ${baseMeta}`
+    : baseMeta;
   renderCheapest(filtered, radius);
   els.resultsBody.innerHTML = "";
   for (let i = 0; i < filtered.length; i++) {
@@ -375,18 +413,42 @@ els.zipUpdate?.addEventListener("click", async () => {
     els.zip.value = zip;
     els.lookupStatus.textContent = `${tracked.label} is tracked — loading…`;
     els.lookupStatus.className = "status ok";
-    showZip(zip);
+    await showZip(zip);
+    els.lookupStatus.textContent = "";
+    els.lookupStatus.className = "status";
     return;
   }
   els.lookupStatus.textContent = "Looking up coordinates…";
   els.lookupStatus.className = "status";
   try {
     const { lat, lng, label } = await geocodeZipBrowser(zip);
+
+    let nearest = null;
+    let nearestD = Infinity;
+    for (const z of index?.zips || []) {
+      const d = haversineMi({ lat, lng }, { lat: z.lat, lng: z.lng });
+      if (d < nearestD) {
+        nearestD = d;
+        nearest = z;
+      }
+    }
+    const trackingRadius = Number(index?.radius) || 100;
+
+    if (nearest && nearestD <= trackingRadius) {
+      els.lookupStatus.textContent =
+        `${label} — re-centering on ${nearest.label} snapshot…`;
+      els.lookupStatus.className = "status ok";
+      await showSessionView(nearest.zip, { lat, lng, label });
+      els.lookupStatus.textContent = "";
+      els.lookupStatus.className = "status";
+      return;
+    }
+
     const cacheEntry = `  "${zip}": { "lat": ${lat}, "lng": ${lng}, "label": ${JSON.stringify(label)} }`;
     els.lookupStatus.innerHTML =
-      `<strong>${escapeHtml(label)}</strong> isn't tracked yet. ` +
-      `Add it to <code>costco_gas/config.json</code> (zips array) ` +
-      `and <code>costco_gas/zip_cache.json</code>:`;
+      `<strong>${escapeHtml(label)}</strong> isn't tracked yet, and no tracked ` +
+      `snapshot covers this area. Add it to <code>costco_gas/config.json</code> ` +
+      `(zips array) and <code>costco_gas/zip_cache.json</code>:`;
     els.lookupStatus.className = "status";
     els.lookupSnippet.textContent =
       `// costco_gas/config.json — add to "zips":\n` +

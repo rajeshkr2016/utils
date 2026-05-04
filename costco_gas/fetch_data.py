@@ -12,6 +12,7 @@ Output files:
 """
 
 import json
+import random
 import sys
 import time
 import traceback
@@ -81,11 +82,8 @@ def geocode_zip(zip_code: str, cache: dict) -> tuple[float, float, str]:
 def fetch_costco(lat: float, lng: float, num: int = 50) -> list[dict]:
     # Costco's API silently misbehaves above ~50 (returns far fewer rows).
     num = min(num, 50)
-    common_headers = {
-        "Accept-Language": "en-US,en;q=0.9",
-    }
     api_headers = {
-        **common_headers,
+        "Accept-Language": "en-US,en;q=0.9",
         "Accept": "application/json, text/plain, */*",
         "Referer": "https://www.costco.com/warehouse-locations",
     }
@@ -98,29 +96,28 @@ def fetch_costco(lat: float, lng: float, num: int = 50) -> list[dict]:
         "countryCode": "US",
     }
 
-    last_err = None
-    for attempt in range(2):
-        try:
-            resp = cffi_requests.get(
-                COSTCO_API_URL,
-                params=api_params,
-                headers=api_headers,
-                impersonate="chrome",
-                timeout=20,
+    # GitHub Actions IPs are heavily rate-limited by Costco. Retry 429s with
+    # exponential backoff plus jitter so concurrent runners don't sync up.
+    waits = [30, 90, 180]
+    resp = None
+    for attempt, wait in enumerate([0, *waits]):
+        if wait:
+            jitter = random.uniform(0, wait * 0.25)
+            print(
+                f"Costco 429 on attempt {attempt}; sleeping {wait + jitter:.0f}s",
+                file=sys.stderr,
             )
-            resp.raise_for_status()
+            time.sleep(wait + jitter)
+        resp = cffi_requests.get(
+            COSTCO_API_URL,
+            params=api_params,
+            headers=api_headers,
+            impersonate="chrome",
+            timeout=20,
+        )
+        if resp.status_code != 429:
             break
-        except Exception as e:
-            last_err = e
-            status = getattr(getattr(e, "response", None), "status_code", None)
-            if attempt == 0 and status == 429:
-                print("Costco returned 429; sleeping 30s before single retry",
-                      file=sys.stderr)
-                time.sleep(30)
-                continue
-            raise
-    else:
-        raise last_err
+    resp.raise_for_status()
 
     raw = resp.json()
     if not isinstance(raw, list) or len(raw) < 2:

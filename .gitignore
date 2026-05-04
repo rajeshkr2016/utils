@@ -2,3 +2,4 @@
 *secret*
 .env
 gdrive_token.json
+costco_gas/__pycache__/fetch_data.cpython-314.pyc
