@@ -2,10 +2,12 @@
 
   // ── CONFIG — EDIT ONLY THIS SECTION ─────────────────────────────
   const CONFIG = {
-    DATES_TO_FILL: [ '04/16', '04/17', '04/20', '04/21'
-      // '04/22', '04/23', '04/24',
-      // '04/27', '04/28', '04/29', '04/30'
-      ],
+    DATES_TO_FILL: [],
+      //'05/01'
+      //'04/16', '04/17', '04/20', '04/21', '04/22', '04/21'
+      //'04/22', '04/23', '04/24',
+      //'04/27', '04/28', '04/29', '04/30'
+      
     // DATES_TO_FILL: [ ],
     // ↑ Set to [] to auto-fill ALL weekdays
     TIMES: ['09:00 AM', '01:00 PM', '01:30 PM', '05:30 PM'],
@@ -64,9 +66,13 @@
   const dayJobs = [];
   let skipped = 0;
 
-  // Find all day label elements (MON, TUE, etc.)
+  const isVisible = (el) => !!(el && el.offsetParent !== null && el.getClientRects().length > 0);
+  const visibleInputs = (root, sel) => Array.from(root.querySelectorAll(sel)).filter(isVisible);
+
+  // Find all day label elements (MON, TUE, etc.) — visible only
   Array.from(document.querySelectorAll('*')).forEach(el => {
     if (el.children.length > 0) return;
+    if (!isVisible(el)) return;
     const dayTxt = (el.innerText||'').trim().toUpperCase();
     if (!/^(MON|TUE|WED|THU|FRI|SAT|SUN)$/.test(dayTxt)) return;
 
@@ -79,7 +85,7 @@
     for (let i = 0; i < 6; i++) {
       if (!searchNode) break;
       const found = Array.from(searchNode.querySelectorAll('*')).find(e =>
-        e.children.length === 0 && /^\d{2}\/\d{2}$/.test((e.innerText||'').trim())
+        e.children.length === 0 && isVisible(e) && /^\d{2}\/\d{2}$/.test((e.innerText||'').trim())
       );
       if (found) { dateStr = found.innerText.trim(); break; }
       searchNode = searchNode.parentElement;
@@ -94,13 +100,14 @@
       }
     }
 
-    // Find punch container (has IND, 2×OUT, INL inputs)
+    // Find punch container (has visible IND, 2×OUT, INL inputs)
     let container = el, punchContainer = null;
     for (let i = 0; i < 12; i++) {
       container = container.parentElement; if (!container) break;
-      if (container.querySelector('input[placeholder="IND"]') &&
-          container.querySelectorAll('input[placeholder="OUT"]').length >= 2 &&
-          container.querySelector('input[placeholder="INL"]')) {
+      const ind = visibleInputs(container, 'input[placeholder="IND"]');
+      const outs = visibleInputs(container, 'input[placeholder="OUT"]');
+      const inl = visibleInputs(container, 'input[placeholder="INL"]');
+      if (ind.length >= 1 && outs.length >= 2 && inl.length >= 1) {
         punchContainer = container; break;
       }
     }
@@ -109,33 +116,47 @@
       return;
     }
 
-    // Find org_level select (Customer dropdown)
-    let orgSelect = null, sec = punchContainer;
-    for (let i = 0; i < 5; i++) {
-      sec = sec.parentElement; if (!sec) break;
-      orgSelect = sec.querySelector('select[id*="org_level_depth_2"]');
-      if (orgSelect) break;
+    // Find the day card: largest ancestor of punchContainer that still contains
+    // exactly one visible IND input (i.e., does not bleed into another day).
+    let dayCard = punchContainer;
+    while (dayCard.parentElement) {
+      const next = dayCard.parentElement;
+      if (visibleInputs(next, 'input[placeholder="IND"]').length > 1) break;
+      dayCard = next;
     }
 
-    dayJobs.push({ dayTxt, dateStr, punchContainer, orgSelect });
+    // Within the day card, locate ALL visible select2 widgets for org_level_depth_2,
+    // then derive the underlying (hidden) selects. Some layouts have one customer
+    // dropdown per punch row (Time/Category/Customer/Comment), so we need to set all.
+    const orgSelects = Array.from(dayCard.querySelectorAll('[id^="s2id_"]'))
+      .filter(s2 => isVisible(s2) && /org_level_depth_2/.test(s2.id))
+      .map(s2 => document.getElementById(s2.id.replace(/^s2id_/, '')))
+      .filter(Boolean);
+
+    dayJobs.push({ dayTxt, dateStr, punchContainer, orgSelects });
   });
 
   console.log(`📌 Days to process: ${dayJobs.map(j => j.dateStr).join(', ')}`);
 
   async function run() {
     let filled = 0;
-    for (const { dayTxt, dateStr, punchContainer, orgSelect } of dayJobs) {
-      // Fill punch times
-      const ind = punchContainer.querySelector('input[placeholder="IND"]');
-      const inl = punchContainer.querySelector('input[placeholder="INL"]');
-      const outs = Array.from(punchContainer.querySelectorAll('input[placeholder="OUT"]'));
+    for (const { dayTxt, dateStr, punchContainer, orgSelects } of dayJobs) {
+      // Fill punch times — visible inputs only
+      const ind = visibleInputs(punchContainer, 'input[placeholder="IND"]')[0];
+      const inl = visibleInputs(punchContainer, 'input[placeholder="INL"]')[0];
+      const outs = visibleInputs(punchContainer, 'input[placeholder="OUT"]');
       if (ind) setVal(ind, CONFIG.TIMES[0]);
       if (outs[0]) setVal(outs[0], CONFIG.TIMES[1]);
       if (inl) setVal(inl, CONFIG.TIMES[2]);
       if (outs[1]) setVal(outs[1], CONFIG.TIMES[3]);
 
-      // Set CAISO
-      if (orgSelect && dateStr) await setCAISOviaAPI(orgSelect, dateStr);
+      // Set CAISO on every customer dropdown belonging to this day
+      if (dateStr && orgSelects && orgSelects.length) {
+        console.log(`🏢 Setting CAISO on ${orgSelects.length} customer dropdown(s) for ${dateStr}`);
+        for (const sel of orgSelects) {
+          await setCAISOviaAPI(sel, dateStr);
+        }
+      }
 
       console.log(`✅ Filled ${dayTxt} ${dateStr}`);
       filled++;
