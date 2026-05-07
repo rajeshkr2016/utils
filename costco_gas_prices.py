@@ -18,7 +18,9 @@ Usage:
 import argparse
 import json
 import math
+import random
 import sys
+import time
 from urllib.request import Request, urlopen
 from urllib.parse import urlencode
 
@@ -55,24 +57,41 @@ def zip_to_coords(zip_code: str) -> tuple[float, float]:
 
 def fetch_costco_gas_prices(lat: float, lng: float, num_warehouses: int = 25) -> list[dict]:
     """Fetch gas prices from Costco warehouses near the given coordinates."""
-    resp = cffi_requests.get(
-        COSTCO_API_URL,
-        params={
-            "numOfWarehouses": str(num_warehouses),
-            "hasGas": "true",
-            "populateWarehouseDetails": "true",
-            "latitude": str(lat),
-            "longitude": str(lng),
-            "countryCode": "US",
-        },
-        headers={
-            "Accept": "application/json, text/plain, */*",
-            "Accept-Language": "en-US,en;q=0.9",
-            "Referer": "https://www.costco.com/warehouse-locations",
-        },
-        impersonate="chrome",
-        timeout=15,
-    )
+    params = {
+        "numOfWarehouses": str(num_warehouses),
+        "hasGas": "true",
+        "populateWarehouseDetails": "true",
+        "latitude": str(lat),
+        "longitude": str(lng),
+        "countryCode": "US",
+    }
+    headers = {
+        "Accept": "application/json, text/plain, */*",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Referer": "https://www.costco.com/warehouse-locations",
+    }
+
+    # Costco rate-limits aggressively. Retry 429s with exponential backoff
+    # plus jitter before giving up.
+    waits = [30, 90, 180]
+    resp = None
+    for attempt, wait in enumerate([0, *waits]):
+        if wait:
+            jitter = random.uniform(0, wait * 0.25)
+            print(
+                f"Costco 429 on attempt {attempt}; sleeping {wait + jitter:.0f}s",
+                file=sys.stderr,
+            )
+            time.sleep(wait + jitter)
+        resp = cffi_requests.get(
+            COSTCO_API_URL,
+            params=params,
+            headers=headers,
+            impersonate="chrome",
+            timeout=15,
+        )
+        if resp.status_code != 429:
+            break
 
     if resp.status_code != 200:
         print(f"Costco API returned HTTP {resp.status_code}", file=sys.stderr)

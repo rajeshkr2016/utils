@@ -195,3 +195,20 @@ python py2notebook.py script.py                  # Creates script.ipynb
 python py2notebook.py script.py -o output.ipynb  # Custom output path
 python py2notebook.py script.py --no-split       # Don't auto-split on def/class
 No external dependencies — uses only the Python standard library.
+
+
+
+Now you have three modes:
+re-run with HEADLESS=0 SCREENSHOT=1 so you can also watch the browser and grab the final screenshot:
+
+# 1. Just check whether the card works at the library catalog (no URL needed)
+LIBRARY_CARD_ID=xxx LIBRARY_PIN=xxx \
+MODE=patron python3 test_livermore_card.py
+
+# 2. Just check LinkedIn (current default behavior)
+LIVERMORE_VALIDATE_URL='...' LIBRARY_CARD_ID=... LIBRARY_PIN=... \
+MODE=linkedin python3 test_livermore_card.py
+
+# 3. Both — patron first; if patron passes, then LinkedIn (this is the default)
+LIVERMORE_VALIDATE_URL='...' LIBRARY_CARD_ID=... LIBRARY_PIN=... \
+python3 test_livermore_card.py
