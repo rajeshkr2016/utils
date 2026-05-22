@@ -1,167 +1,166 @@
-(function(){
+(function () {
 
   // ── CONFIG — EDIT ONLY THIS SECTION ─────────────────────────────
   const CONFIG = {
     DATES_TO_FILL: [],
-      //'05/01'
-      //'04/16', '04/17', '04/20', '04/21', '04/22', '04/21'
-      //'04/22', '04/23', '04/24',
-      //'04/27', '04/28', '04/29', '04/30'
-      
-    // DATES_TO_FILL: [ ],
-    // ↑ Set to [] to auto-fill ALL weekdays
+    // Examples:
+    // DATES_TO_FILL: ['05/01', '05/05', '05/06'],
+    // Leave [] to auto-fill ALL weekdays in the current view
+
     TIMES: ['09:00 AM', '01:00 PM', '01:30 PM', '05:30 PM'],
     EMPLOYEE_ID: '203',
     CAISO_ORG_LEVEL_ID: '7',
-    SKIP_DAYS: ['SAT','SUN']
+    SKIP_DAYS: ['SAT', 'SUN']
   };
   // ── END CONFIG ───────────────────────────────────────────────────
 
+  // React-compatible value setter that triggers onChange
   function setVal(el, val) {
-    const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype,'value').set;
-    setter.call(el, val);
-    ['input','change','blur'].forEach(e => el.dispatchEvent(new Event(e,{bubbles:true})));
+    const nativeInputSetter = Object.getOwnPropertyDescriptor(
+      window.HTMLInputElement.prototype, 'value'
+    ).set;
+    nativeInputSetter.call(el, val);
+    ['input', 'change', 'blur'].forEach(evtName =>
+      el.dispatchEvent(new Event(evtName, { bubbles: true }))
+    );
   }
 
+  // Decode window_id from the select element's ID attribute
   function getWindowId(selectId) {
-    try { return String(JSON.parse(atob(selectId.split('__')[1]))[0]); }
-    catch(e) { return null; }
+    try {
+      const encoded = selectId.split('__')[1];
+      return String(JSON.parse(atob(encoded))[0]);
+    } catch (e) {
+      return null;
+    }
   }
 
-  async function setCAISOviaAPI(selectEl, dateStr) {
+  // Call the API to load CAISO options into the dropdown, then set it
+  async function setCAISOviaAPI(selectEl, fullDate) {
     const windowId = getWindowId(selectEl.id);
-    if (!windowId) { console.warn('No window_id for', selectEl.id); return false; }
-    const onDate = `${dateStr}/${new Date().getFullYear()}`;
+    if (!windowId) {
+      console.warn('⚠️ No window_id for', selectEl.id);
+      return false;
+    }
+
     const params = new URLSearchParams({
-      action: 'load_levels', depth: '2',
-      selected: JSON.stringify({"1":{"depth":1,"org_level_id":47},"2":{"depth":"2","org_level_id":CONFIG.CAISO_ORG_LEVEL_ID}}),
-      required: '{}', ignore_empty_parents: '0',
-      employee_id: CONFIG.EMPLOYEE_ID, on_date: onDate, window_id: windowId
+      action: 'load_levels',
+      depth: '2',
+      selected: JSON.stringify({
+        "1": { "depth": 1, "org_level_id": 47 },
+        "2": { "depth": "2", "org_level_id": CONFIG.CAISO_ORG_LEVEL_ID }
+      }),
+      required: '1',                        // FIX: was '{}', must be '1'
+      ignore_empty_parents: '0',
+      employee_id: CONFIG.EMPLOYEE_ID,
+      on_date: fullDate,                     // FIX: full MM/DD/YYYY from data-date
+      window_id: windowId
     });
+
     try {
       await fetch('php/page/update_org_levels.php', {
         method: 'POST',
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: params.toString()
       });
+
+      // Set via jQuery (triggers select2 UI update)
       jQuery(selectEl).val(CONFIG.CAISO_ORG_LEVEL_ID).trigger('change');
+
+      // Also update the select2 display label if present
       const s2 = document.getElementById('s2id_' + selectEl.id);
       if (s2) {
-        const r = s2.querySelector('.select2-chosen');
-        if (r) r.textContent = 'CAISO';
+        const chosen = s2.querySelector('.select2-chosen');
+        if (chosen) chosen.textContent = 'CAISO';
         s2.setAttribute('title', 'CAISO');
       }
-      console.log(`🏢 CAISO set: ${dateStr}`);
+
+      console.log(`🏢 CAISO set [${fullDate}] windowId=${windowId}`);
       return true;
-    } catch(e) { console.error('API error:', e); return false; }
+    } catch (e) {
+      console.error('❌ API error for', fullDate, e);
+      return false;
+    }
   }
 
-  // ── MAIN LOGIC ───────────────────────────────────────────────────
+  // ── MAIN ─────────────────────────────────────────────────────────
+
+  // Determine if we're filtering to specific dates
   const USE_DATE_LIST = CONFIG.DATES_TO_FILL.length > 0;
-  console.log(USE_DATE_LIST 
+  console.log(USE_DATE_LIST
     ? `📋 Mode: specific dates → ${CONFIG.DATES_TO_FILL.join(', ')}`
     : `📋 Mode: all weekdays (auto)`
   );
 
-  const dayJobs = [];
+  // Collect all day rows from the DOM using reliable data-date containers
+  const dayRows = Array.from(document.querySelectorAll('.timesheet-row-day[data-date]'));
+  const jobs = [];
   let skipped = 0;
 
-  const isVisible = (el) => !!(el && el.offsetParent !== null && el.getClientRects().length > 0);
-  const visibleInputs = (root, sel) => Array.from(root.querySelectorAll(sel)).filter(isVisible);
+  for (const dayRow of dayRows) {
+    const fullDate = dayRow.getAttribute('data-date'); // e.g. "05/01/2026"
+    const shortDate = fullDate.substring(0, 5);         // e.g. "05/01"
+    const dayWrap = dayRow.querySelector('.timesheet-col-day-wrap');
+    const dayTxt = (dayWrap?.innerText || '').trim().toUpperCase().split('\n')[0]; // MON, TUE, etc.
 
-  // Find all day label elements (MON, TUE, etc.) — visible only
-  Array.from(document.querySelectorAll('*')).forEach(el => {
-    if (el.children.length > 0) return;
-    if (!isVisible(el)) return;
-    const dayTxt = (el.innerText||'').trim().toUpperCase();
-    if (!/^(MON|TUE|WED|THU|FRI|SAT|SUN)$/.test(dayTxt)) return;
-
-    // Skip weekends always
-    if (CONFIG.SKIP_DAYS.includes(dayTxt)) { skipped++; return; }
-
-    // Find nearby date (MM/DD)
-    let dateStr = null;
-    let searchNode = el.parentElement;
-    for (let i = 0; i < 6; i++) {
-      if (!searchNode) break;
-      const found = Array.from(searchNode.querySelectorAll('*')).find(e =>
-        e.children.length === 0 && isVisible(e) && /^\d{2}\/\d{2}$/.test((e.innerText||'').trim())
-      );
-      if (found) { dateStr = found.innerText.trim(); break; }
-      searchNode = searchNode.parentElement;
+    // Skip weekends
+    if (CONFIG.SKIP_DAYS.includes(dayTxt)) {
+      skipped++;
+      continue;
     }
 
-    // ✅ KEY FIX: skip if dateStr is null OR not in list
-    if (USE_DATE_LIST) {
-      if (!dateStr || !CONFIG.DATES_TO_FILL.includes(dateStr)) {
-        console.log(`⏭ Skipping ${dayTxt} ${dateStr||'(no date found)'}`);
-        skipped++;
-        return;
-      }
+    // Filter by date list if set
+    if (USE_DATE_LIST && !CONFIG.DATES_TO_FILL.includes(shortDate)) {
+      console.log(`⏭ Skipping ${dayTxt} ${shortDate}`);
+      skipped++;
+      continue;
     }
 
-    // Find punch container (has visible IND, 2×OUT, INL inputs)
-    let container = el, punchContainer = null;
-    for (let i = 0; i < 12; i++) {
-      container = container.parentElement; if (!container) break;
-      const ind = visibleInputs(container, 'input[placeholder="IND"]');
-      const outs = visibleInputs(container, 'input[placeholder="OUT"]');
-      const inl = visibleInputs(container, 'input[placeholder="INL"]');
-      if (ind.length >= 1 && outs.length >= 2 && inl.length >= 1) {
-        punchContainer = container; break;
-      }
-    }
-    if (!punchContainer) {
-      console.warn(`⚠️ No punch container for ${dayTxt} ${dateStr}`);
-      return;
+    // Find punch time inputs within this day row
+    const indInput  = dayRow.querySelector('input[placeholder="IND"]');
+    const inlInput  = dayRow.querySelector('input[placeholder="INL"]');
+    const outInputs = Array.from(dayRow.querySelectorAll('input[placeholder="OUT"]'));
+
+    if (!indInput) {
+      console.warn(`⚠️ No IND input for ${dayTxt} ${shortDate} — skipping`);
+      skipped++;
+      continue;
     }
 
-    // Find the day card: largest ancestor of punchContainer that still contains
-    // exactly one visible IND input (i.e., does not bleed into another day).
-    let dayCard = punchContainer;
-    while (dayCard.parentElement) {
-      const next = dayCard.parentElement;
-      if (visibleInputs(next, 'input[placeholder="IND"]').length > 1) break;
-      dayCard = next;
-    }
+    // Find ALL org level customer selects for this day
+    const orgSelects = Array.from(
+      dayRow.querySelectorAll('[id^="org_level_depth_2"]')
+    );
 
-    // Within the day card, locate ALL visible select2 widgets for org_level_depth_2,
-    // then derive the underlying (hidden) selects. Some layouts have one customer
-    // dropdown per punch row (Time/Category/Customer/Comment), so we need to set all.
-    const orgSelects = Array.from(dayCard.querySelectorAll('[id^="s2id_"]'))
-      .filter(s2 => isVisible(s2) && /org_level_depth_2/.test(s2.id))
-      .map(s2 => document.getElementById(s2.id.replace(/^s2id_/, '')))
-      .filter(Boolean);
+    jobs.push({ dayTxt, shortDate, fullDate, indInput, inlInput, outInputs, orgSelects });
+  }
 
-    dayJobs.push({ dayTxt, dateStr, punchContainer, orgSelects });
-  });
-
-  console.log(`📌 Days to process: ${dayJobs.map(j => j.dateStr).join(', ')}`);
+  console.log(`📌 Days to process (${jobs.length}): ${jobs.map(j => j.shortDate).join(', ')}`);
 
   async function run() {
     let filled = 0;
-    for (const { dayTxt, dateStr, punchContainer, orgSelects } of dayJobs) {
-      // Fill punch times — visible inputs only
-      const ind = visibleInputs(punchContainer, 'input[placeholder="IND"]')[0];
-      const inl = visibleInputs(punchContainer, 'input[placeholder="INL"]')[0];
-      const outs = visibleInputs(punchContainer, 'input[placeholder="OUT"]');
-      if (ind) setVal(ind, CONFIG.TIMES[0]);
-      if (outs[0]) setVal(outs[0], CONFIG.TIMES[1]);
-      if (inl) setVal(inl, CONFIG.TIMES[2]);
-      if (outs[1]) setVal(outs[1], CONFIG.TIMES[3]);
 
-      // Set CAISO on every customer dropdown belonging to this day
-      if (dateStr && orgSelects && orgSelects.length) {
-        console.log(`🏢 Setting CAISO on ${orgSelects.length} customer dropdown(s) for ${dateStr}`);
+    for (const { dayTxt, shortDate, fullDate, indInput, inlInput, outInputs, orgSelects } of jobs) {
+      // Fill punch times
+      setVal(indInput,    CONFIG.TIMES[0]); // 09:00 AM  IND
+      if (outInputs[0]) setVal(outInputs[0], CONFIG.TIMES[1]); // 01:00 PM  OUT
+      if (inlInput)     setVal(inlInput,     CONFIG.TIMES[2]); // 01:30 PM  INL
+      if (outInputs[1]) setVal(outInputs[1], CONFIG.TIMES[3]); // 05:30 PM  OUT
+
+      // Set CAISO on every customer dropdown for this day
+      if (orgSelects.length) {
+        console.log(`🏢 Setting CAISO on ${orgSelects.length} customer dropdown(s) for ${shortDate}`);
         for (const sel of orgSelects) {
-          await setCAISOviaAPI(sel, dateStr);
+          await setCAISOviaAPI(sel, fullDate);
+          await new Promise(r => setTimeout(r, 150)); // small gap between API calls
         }
       }
 
-      console.log(`✅ Filled ${dayTxt} ${dateStr}`);
+      console.log(`✅ Filled ${dayTxt} ${shortDate}`);
       filled++;
       await new Promise(r => setTimeout(r, 300));
     }
+
     alert(`✅ Done!\n\n⏱ Days filled: ${filled}\n⏭ Days skipped: ${skipped}\n\nReview entries then click SAVE.`);
   }
 
