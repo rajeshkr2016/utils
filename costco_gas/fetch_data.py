@@ -96,9 +96,10 @@ def fetch_costco(lat: float, lng: float, num: int = 50) -> list[dict]:
         "countryCode": "US",
     }
 
-    # GitHub Actions IPs are heavily rate-limited by Costco. Retry 429s with
-    # exponential backoff plus jitter so concurrent runners don't sync up.
-    waits = [30, 90, 180]
+    # Costco's Akamai Bot Manager fingerprints curl_cffi's Chrome TLS signature
+    # and returns a 429 challenge ({"cpr_chlge":"true",...}). iOS Safari's
+    # signature passes through cleanly. Short retries cover transient blips.
+    waits = [5, 15, 30]
     resp = None
     for attempt, wait in enumerate([0, *waits]):
         if wait:
@@ -112,7 +113,7 @@ def fetch_costco(lat: float, lng: float, num: int = 50) -> list[dict]:
             COSTCO_API_URL,
             params=api_params,
             headers=api_headers,
-            impersonate="chrome",
+            impersonate="safari17_2_ios",
             timeout=20,
         )
         if resp.status_code != 429:
