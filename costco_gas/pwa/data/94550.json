@@ -6,7 +6,7 @@
     "lng": -121.763
   },
   "radius": 100.0,
-  "updated": "2026-06-05T05:11Z",
+  "updated": "2026-06-05T18:55Z",
   "warehouses": [
     {
       "id": 146,
@@ -60,8 +60,8 @@
       "latitude": 37.526,
       "longitude": -121.999,
       "distance": 16.857356019794384,
-      "regular": 5.479,
-      "premium": 5.899
+      "regular": 5.449,
+      "premium": 5.849
     },
     {
       "id": 778,
@@ -148,7 +148,7 @@
       "latitude": 37.958,
       "longitude": -122.033,
       "distance": 24.029279667024248,
-      "regular": 5.699,
+      "regular": 5.659,
       "premium": 5.999
     },
     {
@@ -225,8 +225,8 @@
       "latitude": 37.244,
       "longitude": -121.786,
       "distance": 30.337719301320263,
-      "regular": 5.399,
-      "premium": 5.899
+      "regular": 5.299,
+      "premium": 5.799
     },
     {
       "id": 482,
@@ -302,8 +302,8 @@
       "latitude": 38.133,
       "longitude": -122.214,
       "distance": 39.611340333851615,
-      "regular": 5.559,
-      "premium": 5.959
+      "regular": 5.499,
+      "premium": 5.899
     },
     {
       "id": 453,
@@ -512,7 +512,7 @@
       "longitude": -121.366,
       "distance": 77.02095720623167,
       "regular": 5.499,
-      "premium": 5.899
+      "premium": 5.859
     },
     {
       "id": 29,
@@ -523,7 +523,7 @@
       "longitude": -121.267,
       "distance": 80.37931637893304,
       "regular": 5.499,
-      "premium": 5.899
+      "premium": 5.859
     }
   ]
 }
